@@ -8,7 +8,7 @@
 .bar2 {fill: silver;}
 .bar2:hover { fill: gold;}
 
-
+.overlay {fill: none; pointer-events: all;}
 
 .axis { font: 10px sans-serif; }
 
@@ -166,8 +166,63 @@ var drawBars = function(rects, barclass){
 drawBars(rects1, "bar2");
 drawBars(rects2, "bar");
 
+// Mouse over lines
+var mousePos = [100, 100];
+var attribs = function (mousePos) {
+	return { "class":"horizontalGrid",
+		"x1" : 0,     "y1" : mousePos[1],
+		"x2" : width, "y2" : mousePos[1],
+		"shape-rendering" : "crispEdges",
+		"stroke":"gray"
+	}
+};
 
+var ln = svg.append("g")
+	.append("line")
+	.attr(attribs([100, 100]))
+	.style("display", "none");
+
+var overlay = svg.append('rect')
+	.attr('class', 'overlay')
+	.attr({'width':width, 'height':height})
+	.attr({'x':0, 'y':0})
+
+overlay.on("mouseover", function() { 
+	ln.style("display", null);
+})
+	.on("mouseout", function() { ln.style("display", "none"); })
+	.on("mousemove", function() {	
+	mousePos = d3.mouse(this);
+	console.log(mousePos);
+	svg.selectAll(".horizontalGrid")
+		.attr(attribs(mousePos)).style("display", null);
+	});
+
+
+    
 
 </script>
 
 
+
+<div class="col-md-4">
+        <h2 class="page-header"><a name="featuresc"></a>C level functionality</h2>
+	
+        <ul>
+		<li>y axis spacing is now increments of 1</li>
+		<li>Vowels are colored differently then consonants. Y is consider a consonant.</li>
+		<li>Letters are sorted by frequency</li>
+        </ul>
+</div>
+
+
+<div class="col-md-4">
+        <h2 class="page-header"><a name="featuresc"></a>B level functionality</h2>
+	
+        <ul>
+		<li>L</li>
+        </ul>
+</div>
+
+
+</body>
