@@ -1,0 +1,119 @@
+
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.bar {fill: steelblue;}
+.bar:hover { fill: brown;}
+.bar2 {fill: silver;}
+.bar2:hover { fill: gold;}
+
+
+
+.axis { font: 10px sans-serif; }
+
+.axis path,
+.axis line {
+  fill: #dddddd;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {display: none;}
+
+</style>
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="js/jquery.min.js" type="text/javascript"></script>
+<script>
+
+var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+var input = decodeURI(location.search).toLowerCase();
+var ob = {};
+var letters = input.split('').filter(function (c) {return c.match("[A-z]");});
+var i = letters.length;
+var vowels = "aeiou".split('');
+var isVowel = function (l) {return $.inArray(l, vowels) > -1 ;};
+
+while (i--) {
+  var c = letters[i]
+  if (ob[c]) {
+    ob[c]++;
+  }  
+  else {
+    ob[c] = 1;
+  }
+}
+console.log(letters.join(''))
+console.log(ob)
+
+
+letterdata = Object.keys(ob).map(function(k) {return {letter: k, count : ob[k]};})
+  .sort(function (a, b) {
+        return b.count - a.count + 0.001 * (a.letter.charCodeAt(0) - b.letter.charCodeAt(0));
+      })
+  .map(function (x, i) {return {key: i, letter: x.letter, count: x.count};})
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+valData = letterdata.filter(function (d) {return isVowel(d.letter);});
+consData = letterdata.filter(function (d) {return !isVowel(d.letter);});
+
+var rects = svg.selectAll(".bar").data(letterdata, function(d) {return d.key ;}).enter();
+var rects1 = svg.selectAll(".bar").data(valData, function(d) {return d.key ;}).enter();
+var rects2 = svg.selectAll(".bar").data(consData, function(d) {return d.key ;}).enter();
+
+
+//selection.exit().remove();
+//selection.order();
+
+var maxCount = d3.max(letterdata, function(d, i) {return d.count;}) + 1;
+var barWidth = width/letterdata.length;
+var barMargin = 10;
+
+var x = d3.scale.ordinal().rangeRoundBands([0, width])
+  .domain(letterdata.map(function (a) {return a.letter;}));
+var y = d3.scale.linear().range([height, 0]).domain([0, maxCount]);
+
+var xAxis = d3.svg.axis().scale(x).orient("bottom");
+var yAxis = d3.svg.axis().scale(y).orient("left").ticks(maxCount);
+
+svg.append("g")
+	.attr("class", "x axis")
+	.attr("transform", "translate(0," + height + ")")
+	.call(xAxis);
+
+svg.append("g")
+	.attr("class", "y axis")
+	.call(yAxis)
+    .append("text")
+	.attr("transform", "rotate(-90)")
+	.attr("y", 6)
+	.attr("dy", "0.71em")
+	.style("text-anchor", "end")
+	.text("Count");
+
+var drawBars = function(rects, barclass){
+	rects.append("rect").attr('y', function (d, i) {return y(d.count);})
+		.attr("class", barclass)
+		.attr('x', function(d, i) {return x(d.letter) + barMargin / 2 ;})
+		.attr('y', function(d, i) {return y(d.count);})
+		.attr('height', function (d, i) {return height - y(d.count);})
+		.attr('width', x.rangeBand() - barMargin)
+}
+
+drawBars(rects1, "bar2");
+drawBars(rects2, "bar");
+
+
+
+</script>
+
+
