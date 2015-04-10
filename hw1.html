@@ -118,11 +118,19 @@ var svg = d3.select("body").append("svg")
 	.append("g")
 	.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+var overlay = svg.append('g').append('rect')
+	.attr('class', 'overlay')
+	.attr({'width':width, 'height':height})
+	.attr({'x':0, 'y':0})
+
+
+
+
 valData = letterdata.filter(function (d) {return isVowel(d.letter);});
 consData = letterdata.filter(function (d) {return !isVowel(d.letter);});
 
-var rects1 = svg.selectAll(".bar").data(valData, function(d) {return d.key ;}).enter();
-var rects2 = svg.selectAll(".bar").data(consData, function(d) {return d.key ;}).enter();
+var rects1 = svg.append('g').selectAll(".bar").data(valData, function(d) {return d.key ;}).enter();
+var rects2 = svg.append('g').selectAll(".bar").data(consData, function(d) {return d.key ;}).enter();
 
 
 //selection.exit().remove();
@@ -163,17 +171,20 @@ var drawBars = function(rects, barclass){
 		.attr('width', x.rangeBand() - barMargin)
 }
 
+
 drawBars(rects1, "bar2");
 drawBars(rects2, "bar");
+
 
 // Mouse over lines
 var mousePos = [100, 100];
 var attribs = function (mousePos) {
 	return { "class":"horizontalGrid",
-		"x1" : 0,     "y1" : mousePos[1],
-		"x2" : width, "y2" : mousePos[1],
+		"x1" : 0,     "y1" : mousePos[1] - 3,
+		"x2" : width, "y2" : mousePos[1] - 3,
 		"shape-rendering" : "crispEdges",
-		"stroke":"gray"
+		"stroke":"gray",
+		"stroke-width":1.5
 	}
 };
 
@@ -182,22 +193,21 @@ var ln = svg.append("g")
 	.attr(attribs([100, 100]))
 	.style("display", "none");
 
-var overlay = svg.append('rect')
-	.attr('class', 'overlay')
-	.attr({'width':width, 'height':height})
-	.attr({'x':0, 'y':0})
 
-overlay.on("mouseover", function() { 
-	ln.style("display", null);
-})
+svg.on("mouseover", function() { ln.style("display", null);})
 	.on("mouseout", function() { ln.style("display", "none"); })
 	.on("mousemove", function() {	
 	mousePos = d3.mouse(this);
-	console.log(mousePos);
 	svg.selectAll(".horizontalGrid")
 		.attr(attribs(mousePos)).style("display", null);
 	});
 
+//http://stackoverflow.com/questions/20220855/d3-mouseover-two-things-at-once
+
+//rects1.on("mouseover", function() {
+//	var rect = rects.select(".bar");
+//	rect.attr("fill", "red");
+//});
 
     
 
