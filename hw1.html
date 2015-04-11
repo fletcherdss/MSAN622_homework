@@ -153,10 +153,9 @@ svg.append("g")
 	.attr("transform", "translate(0," + height + ")")
 	.call(xAxis);
 
-
 var yax = svg.append("g")
 	.attr("class", "y axis")
-	.call(yAxis.tickSize(-width, 0, 0))
+	.call(yAxis.tickSize(-width, 0, 0));
 
 yax.append("text")
 	.attr("y", 6)
@@ -250,8 +249,13 @@ svg.on("mouseover", function() {
 </div>
 
 <p>
-
-
+  This plot does a few things slightly unconventionally. I left some space at the top 
+for the word count. I thought it looked a bit better then having space on the right, even 
+if it is a waste of "paper". Replacing the grid lines with a single grid line 
+changes on mouseover changes to empahasis. With multiple lines the graph is about comparing bars.
+With one line the graph is about looking at the bars individually. Using 
+a moving line is kind of silly when all we are showing is small counts, so this is mostly 
+a proof of concept.
 </p>
 
 
