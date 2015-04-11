@@ -3,10 +3,10 @@
 <meta charset="utf-8">
 <style>
 
-.bar {fill: steelblue;}
-.bar:hover { fill: brown;}
-.bar2 {fill: silver;}
-.bar2:hover { fill: gold;}
+.bar:hover {fill: #a6cee3;}
+.bar { fill: #1f78b4;}
+.bar2:hover {fill: #b2df8a;}
+.bar2 { fill: #33a02c;}
 
 .overlay {fill: none; pointer-events: all;}
 
@@ -180,12 +180,8 @@ var drawBars = function(data, barclass){
 		.attr('width', x.rangeBand() - barMargin)
 }
 
-
 drawBars(valData, "bar2");
 drawBars(consData, "bar");
-
-
-
 
 // Mouse over lines
 var mousePos = [100, 100];
@@ -224,12 +220,6 @@ svg.on("mouseover", function() {
 		.attr({'x':mousePos[0] + 10, 'y':mousePos[1] - 10});
 	});
 
-//http://stackoverflow.com/questions/20220855/d3-mouseover-two-things-at-once
-
-//rects1.on("mouseover", function() {
-//	var rect = rects.select(".bar");
-//	rect.attr("fill", "red");
-//});
 
     
 
@@ -241,7 +231,7 @@ svg.on("mouseover", function() {
         <h2 class="page-header"><a name="featuresc"></a>C level functionality</h2>
 	
         <ul>
-		<li>y axis spacing is now increments of 1</li>
+		<li>y axis spacing is now in increments of 1.</li>
 		<li>Vowels are colored differently then consonants. Y is consider a consonant.</li>
 		<li>Letters are sorted by frequency</li>
 		<li>There are now grid lines assuming the mouse is not hovering
@@ -258,6 +248,12 @@ svg.on("mouseover", function() {
 		by a single grid line at the mouse y position. The exact y value is displayed</li>
         </ul>
 </div>
+
+<p>
+
+
+</p>
+
 
 
 </body>
