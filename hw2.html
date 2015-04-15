@@ -87,6 +87,7 @@
 </nav>
 
 <script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script src="js/jquery.min.js" type="text/javascript"></script>
 <script>
 
@@ -94,25 +95,32 @@
      width = 960 - margin.left - margin.right,
      height = 500 - margin.top - margin.bottom;
 
-
  var svg = d3.select("body").append("svg")
 	         .attr("width", width + margin.left + margin.right)
 	         .attr("height", height + margin.top + margin.bottom)
 	         .append("g")
 	         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+ var rmax = 25;
+
  $.getJSON("state.x77.json", function (json) {
      json = json.sort(function(a, b) {return b.pop - a.pop ;})
 
-     var xmin = d3.min(json, function (j) {return j.life_exp;}),
-         ymin = d3.min(json, function (j) {return j.illiteracy;}),
-         xmax = d3.max(json, function (j) {return j.life_exp;}),
-         ymax = d3.max(json, function (j) {return j.illiteracy;}),
-         rmax = d3.max(json, function (j) {return j.pop});
+     var limin = d3.min(json, function (j) {return j.life_exp;}),
+         ilmin = d3.min(json, function (j) {return j.illiteracy;}),
+         limax = d3.max(json, function (j) {return j.life_exp;}),
+         ilmax = d3.max(json, function (j) {return j.illiteracy;}),
+         popmax = d3.max(json, function (j) {return j.pop;});
 
-     var x = d3.scale.linear().range([0, width]).domain([xmin,xmax]);
-     var y = d3.scale.linear().range([height, 0]).domain([ymin,ymax]);
-     var r = d3.scale.sqrt().range([0, 25]).domain([0, rmax]);
+     var r = d3.scale.sqrt().range([0, rmax]).domain([0, popmax]);
+     var x0 = d3.scale.linear().range([rmax, width - rmax ]).domain([limin,limax]);
+     var y0 = d3.scale.linear().range([height - rmax, rmax]).domain([ilmin,ilmax]);
+
+     //some trickery is required to how the full range for the axis without circles crossing
+     //the axis
+     var x = d3.scale.linear().range([0, width]).domain([x0.invert(0), x0.invert(width)]);
+     var y = d3.scale.linear().range([height, 0]).domain([y0.invert(height), y0.invert(0)]);
+
 //     var f = d3.scale.ordinal()
 //	           .domain(json.map(function (a) {return a.region;}))
 //               .range(colorbrewer.RdBu[9]);
