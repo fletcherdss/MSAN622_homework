@@ -28,6 +28,11 @@
 .bubble:hover {fill: #a6cee3;}
 .bubble { fill: #1f78b4;}
 
+.legend rect {
+  fill:white;
+  stroke:black;
+  opacity:0.8;}
+
 
 </style>
 
@@ -116,8 +121,7 @@
      var x0 = d3.scale.linear().range([rmax, width - rmax ]).domain([limin,limax]);
      var y0 = d3.scale.linear().range([height - rmax, rmax]).domain([ilmin,ilmax]);
 
-     //some trickery is required to how the full range for the axis without circles crossing
-     //the axis
+     //some trickery to get the full axis without circles crossing the axis
      var x = d3.scale.linear().range([0, width]).domain([x0.invert(0), x0.invert(width)]);
      var y = d3.scale.linear().range([height, 0]).domain([y0.invert(height), y0.invert(0)]);
 
@@ -138,7 +142,6 @@
                   .attr("class", "y axis")
                   .call(yAxis);
     
-
 	 var bubbles = svg.append('g').selectAll(".bubble")
 		              .data(json, function(d) {return d.state ;}).enter();
 
@@ -147,7 +150,33 @@
             .attr('cy', function (d, i) {return y(d.illiteracy);})
 		    .attr('r', function (d, i) {return r(d.pop);})
             .attr('fill', function (d, i) {return f(d.region)})
-            //.attr('opacity', 0.8);
+            .style('opacity', 0.8)
+            .style("stroke", "#111111")
+		    .attr("shape-rendering", "geometricPrecision");
+
+     //This is slow and ugly. 
+     var regions = json.map(function(d) {return d.region;});
+     var regions = regions.filter(function(v, i) {return regions.indexOf(v) == i;});
+
+     var legend = svg.append('g')
+                     .attr("class", "legend")
+                     .attr("transform","translate(" + (width - 160) + ",30)")
+                     .selectAll(".legend")
+                     .data(regions).enter();
+ 
+     legend.append("rect")
+             .attr("y", function(d, i){return i * 20;})
+             .attr("width", 10)
+             .attr("height", 10)
+             .style("font-size","12px")
+             .style("fill", function(d) {return f(d)})
+             .append("text")
+             .text("word");
+
+     legend.append("text")
+           .attr("x", function(d, i){return 15;})
+           .attr("y", function(d, i){return 10 + i * 20;})
+           .text(function(d) {return d});
 
  });
 
