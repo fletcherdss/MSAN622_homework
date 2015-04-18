@@ -145,7 +145,7 @@
          width = w - margin.left - margin.right,
          height = h - margin.top - margin.bottom;
 
-     var rmax = 25;
+     var rmax = Math.floor((h * h) / 10000);
 
      $.getJSON("state.x77.json", function (json) {
          json = json.sort(function(a, b) {return b.pop - a.pop ;})
@@ -175,12 +175,29 @@
          var xax = facet.append("g")
 	                  .attr("class", "x axis")
 	                  .attr("transform", "translate(0," + height + ")")
-	                  .call(xAxis);
+	                  .call(xAxis.ticks(rmax));
+
+         xax.append("text")
+	        .attr("y", 26)
+	        .attr("x", w / 2 - 50)
+	        .attr("dx", "0.71em")
+	        .style("text-anchor", "end", " grid")
+	        .text(xvar);
+
 
          var yax = facet.append("g")
                       .attr("class", "y axis")
                       .call(yAxis);
     
+         yax.append("text")
+	        .attr("y", 6)
+	        .attr("x", -30)
+	        .attr("transform", "rotate(-90)")
+	        .attr("dy", "0.71em")
+	        .style("text-anchor", "end", " grid")
+	        .text(yvar);
+
+
 	     var bubbles = facet.append('g').selectAll(".bubble")
 		                  .data(json, function(d) {return d.state ;}).enter();
 
@@ -218,15 +235,31 @@ for (var i = 0; i < 6; i++) {
 // bubbles(xvar, yvar, 000, 700, 200, 200);
 // bubbles(xvar, yvar, 200, 700, 200, 200);
   
-
-
-
-
-
-
-
-
 </script>
+
+
+
+<div class="col-md-4">
+        <h2 class="page-header"><a name="featuresc"></a>Basic functionality</h2>
+	
+        <ul>
+	        <li> A simple bubble plot compares two variables</li>
+            <li> Size of the bubble is population of the sate </li>
+            <li> Color indicates geographic region </li>
+        </ul>
+</div>
+
+
+<div class="col-md-4">
+        <h2 class="page-header"><a name="featuresc"></a>Intermediate functionality</h2>
+	
+        <ul>
+	        <li> A grid of bubble plots compair pairs numerical variables</li>
+            <li> The six numerical variables are frost, highschool graduation, illiteracy, 
+            income, life expectancy and murder rate</li>
+            <li> Colors are same as above
+        </ul>
+</div>
 
 
 
