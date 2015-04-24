@@ -82,7 +82,7 @@
 </nav>
 
 <div class="col-md-4">
-        <h2 class="page-header"><a name="featuresc"></a>A simple line plot</h2>
+        <h2 class="page-header"><a name="featuresc"></a>A Simple Line Plot</h2>
         <p>
             This is a simple line plot showing the price of petrol (gasoline) 
             from 1969 to 1985. There is only a small amount of seasonal 
@@ -98,7 +98,7 @@
 <script>
  var margin = {top: 20, right: 20, bottom: 30, left: 40},
      width = 900 - margin.left - margin.right,
-     height = 300 - margin.top - margin.bottom;
+     height = 400 - margin.top - margin.bottom;
 
  var svg = d3.select("body").append("svg")
 	         .attr("width", width + margin.left + margin.right)
@@ -134,6 +134,7 @@
         .attr("d", line);
 
      var xAxis = d3.svg.axis().scale(x).orient("bottom").tickSize(6, 0 , 0);
+     xAxis.tickFormat(d3.format("d"));
      var yAxis = d3.svg.axis().scale(y).orient("left").tickSize(6, 0, 0);
 
      var xax = svg.append("g").attr("class", "x axis")
@@ -162,11 +163,15 @@
 
 </script>
 
+<div class="col-md-4">
+        <h2 class="page-header"><a name="featuresc"></a>A Stacked Area Plot</h2>
+        <p>
+            This stacked area plot shows passenger deaths in the front of the
+            vehical and in the rear of the vehical.
+        </p>
+</div>
 
 <script>
- var margin = {top: 20, right: 20, bottom: 30, left: 40},
-     width = 900 - margin.left - margin.right,
-     height = 300 - margin.top - margin.bottom;
 
  var svg2 = d3.select("body").append("svg")
 	         .attr("width", width + margin.left + margin.right)
@@ -181,7 +186,7 @@
                .range([0,width]);
 
      var y = d3.scale.linear()
-               .domain(d3.extent(data, function(d) {return d.PetrolPrice;}))
+               .domain([0, d3.max(data, function(d) {return d.front + d.rear;})])
                .range([height, 0]);
 
      
@@ -200,7 +205,8 @@
          return {
              name: name,
              values: data.map(function(d) {
-                 return {time: d.time, y: d[name]/12000};
+                 console.log(y(d[name]))
+                 return {time: d.time, y: d[name]};
              })
          };
      }));
@@ -210,12 +216,6 @@
                       .enter().append("g")
                       .attr("class", "stack");
 
-
-     console.log(stackData);
-     console.log(color("rear"));
-     console.log(color("front"));
-
-
      stackobj.append("path")
             .attr("class", "area")
             .attr("d", function(d) {return area(d.values);})
@@ -223,6 +223,7 @@
 
 
      var xAxis = d3.svg.axis().scale(x).orient("bottom").tickSize(6, 0 , 0);
+     xAxis.tickFormat(d3.format("d"));
      var yAxis = d3.svg.axis().scale(y).orient("left").tickSize(6, 0, 0);
 
      var xax = svg2.append("g").attr("class", "x axis")
@@ -242,40 +243,11 @@
     
      yax.append("text")
 	    .attr("y", 6)
-	    .attr("x", -60)
+	    .attr("x", -105)
 	    .attr("transform", "rotate(-90)")
 	    .attr("dy", "0.71em")
 	    .style("text-anchor", "end", " grid")
-	    .text("Petrol Price");
+	    .text("Total Passenger Deaths");
  });
-
-/*
- function renderLines(stackedData) {
-     _line = d3.svg.line()
-               .x(function (d) {
-                   return _x(d.x); //<-C
-               })
-               .y(function (d) {
-                   return _y(d.y + d.y0); //<-D
-               });
-     
-     _bodyG.selectAll("path.line")
-		   .data(stackedData)
-           .enter()
-           .append("path")
-           .style("stroke", function (d, i) {
-               return _colors(i);
-           })
-           .attr("class", "line");
-     
-     _bodyG.selectAll("path.line")
-		   .data(stackedData)
-           .transition()
-           .attr("d", function (d) {
-               return _line(d);
-           });
- }
-*/
-
 
 </script>
