@@ -19,6 +19,13 @@
 .y.axis path {display: black;}
 .y.axis .tick line {stroke: lightgrey;}
 
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+ 
 </style>
 
 
@@ -74,10 +81,201 @@
     </div>
 </nav>
 
-<script src="js/d3.v3.min.js" charset="utf-8"></script>
+<div class="col-md-4">
+        <h2 class="page-header"><a name="featuresc"></a>A simple line plot</h2>
+        <p>
+            This is a simple line plot showing the price of petrol (gasoline) 
+            from 1969 to 1985. There is only a small amount of seasonal 
+            behavior.
+        </p>
+
+</div>
+
+
+<script src="js/d3.min.js" charset="utf-8"></script>
 <script src="js/jquery.min.js" type="text/javascript"></script>
 <script src="js/colorbrewer.js" type="text/javascript"></script>
 <script>
+ var margin = {top: 20, right: 20, bottom: 30, left: 40},
+     width = 900 - margin.left - margin.right,
+     height = 300 - margin.top - margin.bottom;
+
+ var svg = d3.select("body").append("svg")
+	         .attr("width", width + margin.left + margin.right)
+	         .attr("height", height + margin.top + margin.bottom)
+	         .append("g")
+	         .attr("transform",
+                   "translate(" + (margin.left) + "," + (margin.top) + ")");
+
+ var showDate = function(time) {
+     var year = Math.floor(time);
+     var month = Math.floor((time - year) * 12) + 1;
+     var months = ['Jan', 'Feb', 'March', 'April', 'May', 'Jun',
+                   'Jul', 'Aug', 'Sep', 'Nov', 'Dec']
+     return months[month] + " " + year;
+ }
+
+ d3.json("seatbelts.json", function (data) {
+     var x = d3.scale.linear()
+               .domain(d3.extent(data, function(d) {return d.time;}))
+               .range([0,width]);
+
+     var y = d3.scale.linear()
+               .domain(d3.extent(data, function(d) {return d.PetrolPrice;}))
+               .range([height, 0]);
+
+     var line = d3.svg.line()
+                  .x(function(d) { return x(d.time); })
+                  .y(function(d) { return y(d.PetrolPrice); });
+     
+     svg.append("path")
+        .datum(data)
+        .attr("class", "line")
+        .attr("d", line);
+
+     var xAxis = d3.svg.axis().scale(x).orient("bottom").tickSize(6, 0 , 0);
+     var yAxis = d3.svg.axis().scale(y).orient("left").tickSize(6, 0, 0);
+
+     var xax = svg.append("g").attr("class", "x axis")
+                  .attr("transform", "translate(0," + height + ")")
+	              .call(xAxis.ticks(15));
+
+     xax.append("text")
+	    .attr("y", 26)
+	    .attr("x", width / 2 - 50)
+	    .attr("dx", "0.71em")
+	    .style("text-anchor", "end", " grid")
+	    .text("year");
+
+     var yax = svg.append("g")
+                      .attr("class", "y axis")
+                      .call(yAxis);
+    
+     yax.append("text")
+	    .attr("y", 6)
+	    .attr("x", -60)
+	    .attr("transform", "rotate(-90)")
+	    .attr("dy", "0.71em")
+	    .style("text-anchor", "end", " grid")
+	    .text("Petrol Price");
+ });
+
+</script>
+
+
+<script>
+ var margin = {top: 20, right: 20, bottom: 30, left: 40},
+     width = 900 - margin.left - margin.right,
+     height = 300 - margin.top - margin.bottom;
+
+ var svg2 = d3.select("body").append("svg")
+	         .attr("width", width + margin.left + margin.right)
+	         .attr("height", height + margin.top + margin.bottom)
+	         .append("g")
+	         .attr("transform",
+                   "translate(" + (margin.left) + "," + (margin.top) + ")");
+
+ d3.json("seatbelts.json", function (data) {
+     var x = d3.scale.linear()
+               .domain(d3.extent(data, function(d) {return d.time;}))
+               .range([0,width]);
+
+     var y = d3.scale.linear()
+               .domain(d3.extent(data, function(d) {return d.PetrolPrice;}))
+               .range([height, 0]);
+
+     
+     var area = d3.svg.area()
+                  .x(function(d) { return x(d.time); })
+                  .y0(function(d) { return y(d.y0); })
+                  .y1(function(d) { return y(d.y0 + d.y); });
+
+     var stack = d3.layout.stack()
+                   .values(function(d) { return d.values; });
+
+     var color = d3.scale.category10()
+                   .domain(['front', 'rear']);
+
+     var stackData = stack(color.domain().map(function(name) {
+         return {
+             name: name,
+             values: data.map(function(d) {
+                 return {time: d.time, y: d[name]/12000};
+             })
+         };
+     }));
+
+     var stackobj = svg2.selectAll(".stack")
+                      .data(stackData)
+                      .enter().append("g")
+                      .attr("class", "stack");
+
+
+     console.log(stackData);
+     console.log(color("rear"));
+     console.log(color("front"));
+
+
+     stackobj.append("path")
+            .attr("class", "area")
+            .attr("d", function(d) {return area(d.values);})
+            .style("fill", function(d) { return color(d.name); });
+
+
+     var xAxis = d3.svg.axis().scale(x).orient("bottom").tickSize(6, 0 , 0);
+     var yAxis = d3.svg.axis().scale(y).orient("left").tickSize(6, 0, 0);
+
+     var xax = svg2.append("g").attr("class", "x axis")
+                  .attr("transform", "translate(0," + height + ")")
+	              .call(xAxis.ticks(15));
+
+     xax.append("text")
+	    .attr("y", 26)
+	    .attr("x", width / 2 - 50)
+	    .attr("dx", "0.71em")
+	    .style("text-anchor", "end", " grid")
+	    .text("year");
+
+     var yax = svg2.append("g")
+                      .attr("class", "y axis")
+                      .call(yAxis);
+    
+     yax.append("text")
+	    .attr("y", 6)
+	    .attr("x", -60)
+	    .attr("transform", "rotate(-90)")
+	    .attr("dy", "0.71em")
+	    .style("text-anchor", "end", " grid")
+	    .text("Petrol Price");
+ });
+
+/*
+ function renderLines(stackedData) {
+     _line = d3.svg.line()
+               .x(function (d) {
+                   return _x(d.x); //<-C
+               })
+               .y(function (d) {
+                   return _y(d.y + d.y0); //<-D
+               });
+     
+     _bodyG.selectAll("path.line")
+		   .data(stackedData)
+           .enter()
+           .append("path")
+           .style("stroke", function (d, i) {
+               return _colors(i);
+           })
+           .attr("class", "line");
+     
+     _bodyG.selectAll("path.line")
+		   .data(stackedData)
+           .transition()
+           .attr("d", function (d) {
+               return _line(d);
+           });
+ }
+*/
 
 
 </script>
