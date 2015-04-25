@@ -86,15 +86,50 @@
         <p>
             This is a simple line plot showing the price of petrol (gasoline) 
             from 1969 to 1985. There is only a small amount of seasonal 
-            behavior.
+            behavior. As such a radial plot would not be apppropriate for
+            visualizing this variable.
         </p>
 
 </div>
 
 
-<script src="js/d3.min.js" charset="utf-8"></script>
+
+<script src="js/d3.js" charset="utf-8"></script>
 <script src="js/jquery.min.js" type="text/javascript"></script>
 <script src="js/colorbrewer.js" type="text/javascript"></script>
+<script>
+ var makeAxies = function(svg, x, y, ytext){
+     
+     var xAxis = d3.svg.axis().scale(x).orient("bottom").tickSize(6, 0 , 0);
+     xAxis.tickFormat(d3.format("d"));
+     var yAxis = d3.svg.axis().scale(y).orient("left").tickSize(6, 0, 0);
+     
+     var xax = svg.append("g").attr("class", "x axis")
+                  .attr("transform", "translate(0," + height + ")")
+	              .call(xAxis.ticks(15));
+     
+     xax.append("text")
+	    .attr("y", 26)
+	    .attr("x", width / 2 - 50)
+	    .attr("dx", "0.71em")
+	    .style("text-anchor", "end", " grid")
+	    .text("year");
+     
+     var yax = svg.append("g")
+                  .attr("class", "y axis")
+                  .call(yAxis);
+     
+     yax.append("text")
+	    .attr("y", 6)
+	    .attr("x", -5 * ytext.length)
+	    .attr("transform", "rotate(-90)")
+	    .attr("dy", "0.71em")
+	    .style("text-anchor", "end", " grid")
+	    .text(ytext);
+ };
+
+</script>
+
 <script>
  var margin = {top: 20, right: 20, bottom: 30, left: 40},
      width = 900 - margin.left - margin.right,
@@ -133,32 +168,7 @@
         .attr("class", "line")
         .attr("d", line);
 
-     var xAxis = d3.svg.axis().scale(x).orient("bottom").tickSize(6, 0 , 0);
-     xAxis.tickFormat(d3.format("d"));
-     var yAxis = d3.svg.axis().scale(y).orient("left").tickSize(6, 0, 0);
-
-     var xax = svg.append("g").attr("class", "x axis")
-                  .attr("transform", "translate(0," + height + ")")
-	              .call(xAxis.ticks(15));
-
-     xax.append("text")
-	    .attr("y", 26)
-	    .attr("x", width / 2 - 50)
-	    .attr("dx", "0.71em")
-	    .style("text-anchor", "end", " grid")
-	    .text("year");
-
-     var yax = svg.append("g")
-                      .attr("class", "y axis")
-                      .call(yAxis);
-    
-     yax.append("text")
-	    .attr("y", 6)
-	    .attr("x", -60)
-	    .attr("transform", "rotate(-90)")
-	    .attr("dy", "0.71em")
-	    .style("text-anchor", "end", " grid")
-	    .text("Petrol Price");
+     makeAxies(svg,x, y, "Petrol Price");
  });
 
 </script>
@@ -167,7 +177,11 @@
         <h2 class="page-header"><a name="featuresc"></a>A Stacked Area Plot</h2>
         <p>
             This stacked area plot shows passenger deaths in the front of the
-            vehical and in the rear of the vehical.
+            vehical and in the rear of the vehical. Stacked area was chosen
+            because it makes it easy to read both total passenger deaths 
+            as well as passenger deaths in the front seat. It is more
+            difficult to accurately read passenger deaths in the 
+            rear seat.
         </p>
 </div>
 
@@ -176,20 +190,24 @@
  var svg2 = d3.select("body").append("svg")
 	         .attr("width", width + margin.left + margin.right)
 	         .attr("height", height + margin.top + margin.bottom)
-	         .append("g")
+	         .append("g").attr("class", "stackPlot")
 	         .attr("transform",
                    "translate(" + (margin.left) + "," + (margin.top) + ")");
 
  d3.json("seatbelts.json", function (data) {
+     xExtentMax = d3.extent(data, function(d) {return d.time;});
+     yMax = d3.max(data.filter(function(d) {
+         return d.time >= xExtentMax[0] && d.time <= xExtentMax[1];}),
+                               function(d) {return d.front + d.rear;});
+
      var x = d3.scale.linear()
-               .domain(d3.extent(data, function(d) {return d.time;}))
+               .domain(xExtentMax)
                .range([0,width]);
 
      var y = d3.scale.linear()
-               .domain([0, d3.max(data, function(d) {return d.front + d.rear;})])
+               .domain([0, yMax])
                .range([height, 0]);
 
-     
      var area = d3.svg.area()
                   .x(function(d) { return x(d.time); })
                   .y0(function(d) { return y(d.y0); })
@@ -205,7 +223,6 @@
          return {
              name: name,
              values: data.map(function(d) {
-                 console.log(y(d[name]))
                  return {time: d.time, y: d[name]};
              })
          };
@@ -221,33 +238,17 @@
             .attr("d", function(d) {return area(d.values);})
             .style("fill", function(d) { return color(d.name); });
 
-
-     var xAxis = d3.svg.axis().scale(x).orient("bottom").tickSize(6, 0 , 0);
-     xAxis.tickFormat(d3.format("d"));
-     var yAxis = d3.svg.axis().scale(y).orient("left").tickSize(6, 0, 0);
-
-     var xax = svg2.append("g").attr("class", "x axis")
-                  .attr("transform", "translate(0," + height + ")")
-	              .call(xAxis.ticks(15));
-
-     xax.append("text")
-	    .attr("y", 26)
-	    .attr("x", width / 2 - 50)
-	    .attr("dx", "0.71em")
-	    .style("text-anchor", "end", " grid")
-	    .text("year");
-
-     var yax = svg2.append("g")
-                      .attr("class", "y axis")
-                      .call(yAxis);
-    
-     yax.append("text")
-	    .attr("y", 6)
-	    .attr("x", -105)
-	    .attr("transform", "rotate(-90)")
-	    .attr("dy", "0.71em")
-	    .style("text-anchor", "end", " grid")
-	    .text("Total Passenger Deaths");
+     makeAxies(svg2,x, y, "Total Passenger Deaths");
  });
 
 </script>
+
+<div class="col-md-4">
+        <h2 class="page-header"><a name="featuresc"></a>Basic Functionality</h2>
+	
+        <ul>
+	        <li> A line plot shows the price of fuel over time</li>
+            <li> A stacked area plot shows Passenger deaths broken up by where in the car they
+            were sitting.</li>
+        </ul>
+</div>
