@@ -1,0 +1,191 @@
+
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+
+</style>
+
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Project Dataset</title>
+
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/bootstrap-theme.min.css" rel="stylesheet">
+
+<style type="text/css">
+    body {
+        padding-top: 50px;
+        padding-bottom: 20px;
+    }
+</style>
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
+</head>
+
+
+<body>
+
+<!-- Fixed Navbar -->
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle Navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="./#">MSAN 622</a>
+        </div>
+
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="./#homework">Homework</a></li>
+                <li><a href="./#project">Project</a></li>
+                <li><a href="./#participation">Participation</a></li>
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="./#about">About</a></li>
+                <li><a href="./#contact">Contact</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</nav>
+
+<div class="row">
+    <div class="col-md-8">
+        <h2 class="page-header"><a name="about"></a>The Data Set</h2> 
+            <div class="media-body">
+                <p>
+	                The data for this project will be based upon the contents of
+	                <a href ="http://www.gutenberg.org/wiki/Main_Page"> Project Gutenberg </a>.
+	                Project Gutenberg is a collection of public domain ebooks.
+	                Note that some of these books may still be under copyright outside
+	                of the United States. 
+                    See the <a href ="https://www.gutenberg.org/wiki/Gutenberg:Terms_of_Use">
+                        terms of use </a> for more details. 
+                    The <a href="https://www.gutenberg.org/cache/epub/feeds/rdf-files.tar.bz2">
+                        complete catalog </a> can 
+                    also be downloaded.                   
+                    It is licensed under the <a href="http://www.gnu.org/licenses/gpl.html"> 
+                        GNU General Public License </a>.
+                    I plan on the visualization being based on data 
+                    aggregated from that data set. 
+
+                </p>
+
+                <p>
+                    I choose this data because I wanted to work with a text data set. 
+                    Project Gutenberg has an extensive collection, is in the public domain, 
+                    and is cleanly formatted. While visualizing individual books is one option, 
+                    the collection is extensive enough that visualizations could be done 
+                    across books. I would be interested, for example, to see if
+                    it would be possible to make a time series by publishing date.
+
+                </p>
+
+                <p>
+                    In case the data is unavailable it 
+                    is
+                    <a href="./data/rdf-files.tar.bz2"> mirrored here</a>. 
+
+                    <div class="col-md-4">
+                        <h2 class="page-header"><a name="featuresc"></a>Planned tools. </h2>
+                        <p>
+                        The data set it self is a rather large collection of RDF files. 
+                        Too large to process in D3. Rather I will extract the data I need 
+                        using the python library RDFLib, depending the the visualizations.
+                        One useful statistic for analysing text is word frequencies. I will
+                        probably compute a number of JSON objects with the frequencies of
+                        different words for individual books, as well as a across categories.
+                        </p>
+                
+                        <p>
+                            I also plan to employ some tools for EDA, likely in python or R.
+                            As D3 plots can be timeconsuming to create I will likely
+                            experiment with what makes for a good visualization using
+                            something like ggplot. Other tools like plotly or 
+                            tablau might also prove useful.
+
+                        <ul>
+	                        <li> A line plot shows the price of fuel over time</li>
+                            <li> A stacked area plot shows Passenger deaths broken up by where in the car they
+                                were sitting.</li>
+                        </ul>
+                    </div>
+
+                    <div class="col-md-4">
+                        <h2 class="page-header"><a name="featuresc"></a>Planned Techniques. </h2>
+                        <p>
+                        I plan on implementing 3 types of visualization. First I seek to 
+                        compare individual books, choosen from a drop down menu, on
+                        various statistics such as vocablary and length. Individual Genres 
+                        can also be compared in this manner. Group bars would probably
+                        well suited to this task, though small multiples might be another option.
+                        </p>
+                        <p>
+                            I also am interested in doing a time series visualization, 
+                            showing how language changes over time. 
+                            I would probably find some words that are interesting and plot the
+                            frequency of a given word across all books published in a given
+                            year. I may also stratify by Genre. 
+                        </p>
+                        
+
+                        <p>
+                            The final visualization will be more focused on
+                            understanding the topic of individual books. One
+                            aspect I will explore is mapping cooccurance of characters
+                            in works of fiction. I might try to do a visualization such 
+                            with the x-axis the word position on the book, and 
+                            the y axis the occurance of characters names. I might 
+                            try to follow a visualization like this one from 
+                            <a href="https://xkcd.com/657/large/"> XKCD </a>, 
+                            though it would be difficult to get time as accurate. 
+
+                        </p>
+
+                       
+                    </div>
+
+                    <div class="col-md-4">
+                        <h2 class="page-header"><a name="featuresc"></a>Planned Techniques. </h2>
+                        <p>
+                            Most of my planned interation will be around allowing the user
+                            to choose which data to emphasize. The user will have
+                            the option of choosing which words they want to visualize,
+                            as well as which books or collections of the books they 
+                            are interested in.
+                        </p>
+
+                        <p>
+                            In the visualization of occurance of characters, the 
+                            user will have the option of moving character lines
+                            to make the visualization less messy. It would
+                            be impossible to automatically arrange the 
+                            data as neatly as it is in the XKCD visualization
+                            but if the user could drag to re-organize things
+                            might be more readable.
+
+                        </p>
+
+                       
+                    </div>
+
+
+                </p>
+            </div>
+    </div>
+</div>
+	
+
+</body>
