@@ -9,8 +9,8 @@
     <script src="http://d3js.org/topojson.v1.min.js"></script>
 
     <!-- load custom CSS and JavaScript //-->
-    <link rel="stylesheet" href="style.css">
-    <script src="script.js"></script>
+    <link rel="stylesheet" href="css/hw5.css">
+    <script src="js/hw5.js"></script>
 
  </head>
 
@@ -28,9 +28,8 @@
  */
 var base = "https://gist.githubusercontent.com/mbostock/4090846/raw/";
 var url = {
-    country: base + "us.json",
-    states:  base + "us-state-names.tsv",
-    precip:  "usprecip.json" // relative URL
+    world: "world-50m.json",
+    earthquakes:  "4.5_month.csv"
 };
 
 // Uses reusable chart model
@@ -38,10 +37,10 @@ var url = {
 var chart = symbolMap();
 
 // Update how we access data (need the precip property)
-chart = chart.value(function(d) { return d.precip; });
+chart = chart.value(function(d) { return d.mag; });
 
 // Nested calls to trigger drawing in proper order
-d3.json(url.country, function(mapError, mapJSON) {
+d3.json(url.world, function(mapError, mapJSON) {
     if (processError(mapError)) return;
 
     // update map data
@@ -49,7 +48,7 @@ d3.json(url.country, function(mapError, mapJSON) {
 
     // Wait until the map is drawn before loading
     // and drawing the data values
-    d3.json(url.precip, function(dataError, dataJSON) {
+    d3.csv(url.earthquakes, function(dataError, dataJSON) {
         if (processError(dataError)) return;
 
         chart = chart.values(dataJSON);
@@ -57,13 +56,6 @@ d3.json(url.country, function(mapError, mapJSON) {
     });
 });
 
-// Load state lookup information
-// Possible some lookups will fail until this loads
-d3.tsv(url.states, parseStateName, function(error, data) {
-        if (processError(error)) return;
-        chart = chart.lookup(data);
-    }
-);
 
 </script>
 

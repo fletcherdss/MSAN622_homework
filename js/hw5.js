@@ -38,7 +38,13 @@ function symbolMap() {
 
     var lookup = {};
 
-    var projection = d3.geo.albersUsa();
+    var projection = d3.geo.mercator()
+        .scale((width + 1) / 2 / Math.PI)
+        .translate([width / 2, height / 2])
+        .precision(.1);
+
+    var width = 960;
+    var height = 960;
 
     var radius = d3.scale.sqrt().range([5, 15]);
 
@@ -86,10 +92,10 @@ function symbolMap() {
         var symbols = svg.append("g").attr("id", "dots");
 
         // show that only 1 feature for land
-        console.log(topojson.feature(map, map.objects.land));
+//        console.log(topojson.feature(map, map.objects.land));
 
         // show that we have an array of features for states
-        console.log(topojson.feature(map, map.objects.states));
+//        console.log(topojson.feature(map, map.objects.states));
 
         // draw base map
         country.append("path")
