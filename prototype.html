@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Stacked Area Chart</title>
+    <script type="text/javascript" src="js/d3.min.js"></script>
+    <script type="text/javascript" src="js/underscore-min.js"></script>
+</head>
+
+<style>
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+</style>
+
+<body>
+
+<script>
+ numPages = 180
+
+ var data = [
+     {"char":"green", "page":1},
+     {"char":"green", "page":20},
+     {"char":"red", "page":21},
+     {"char":"brown", "page":40},
+     {"char":"red", "page":60},
+     {"char":"green", "page":100},
+     {"char":"green", "page":120},
+     {"char":"brown", "page":140},
+     {"char":"pink", "page":140},
+     {"char":"pink", "page":160},
+     {"char":"green", "page":160} 
+ ]
+
+ var chars = _.unique(data.map(function (d) {return d.char;}))
+ var sigPages = _.unique(data.map(function (d) {return d.page;}))
+                 .sort(function (a, b) {return a - b;})
+
+ function completePath(data) {
+     var pathdata = chars.map(function(character) {
+         var charData = data.filter(function(d) {return d.char == character;});
+         charData.forEach(function(d, i) {d.present = i % 2 == 0;});
+         return charData;
+     });
+     return chars.map(function(character) {
+         var charData = data.filter(function(d) {return d.char == character;})
+                            .sort(function(a, b) {return a.page - b.page;});
+         console.log(charData);
+         charData.forEach(function(d, i) {d.present = i % 2 == 0;})
+         var filledPath = _.clone(sigPages);
+         var i = 1;
+         filledPath.forEach(function(page, j) {
+             if (i < charData.length && charData[i].page <= page)
+                 i++;
+             filledPath[j] = {"char":character, "page":page, "present":charData[i-1].present};
+         });
+         return filledPath;
+     });
+ };
+
+
+ 
+
+ var margin = {top: 20, right: 20, bottom: 30, left: 40},
+     width = 900 - margin.left - margin.right,
+     height = 400 - margin.top - margin.bottom;
+
+ var svg = d3.select("body").append("svg")
+	          .attr("width", width + margin.left + margin.right)
+	          .attr("height", height + margin.top + margin.bottom)
+	          .append("g")
+	          .attr("transform",
+                    "translate(" + (margin.left) + "," + (margin.top) + ")");
+
+ var x = d3.scale.linear()
+           .domain(d3.extent(data, function(d) {return d.page;}))
+           .range([0,width]);
+ 
+ var y = d3.scale.linear()
+           .domain([0, chars.length])
+           .range([height, 0]);
+
+ var color = d3.scale.category10()
+               .domain(chars);
+
+ 
+ function groupNumber(char, page){
+     return Math.floor(Math.random() * y.domain()[1])
+ }
+
+ var line = d3.svg.line()
+              .x(function(d) { return x(d.page); })
+              .y(function(d) { return y(groupNumber(d.char, d.page)); })
+              .interpolate("basis");
+ 
+ svg.append("path")
+    .datum(data)
+    .attr("class", "line")
+    .attr("d", line)
+    .style("stroke", function(d) { return color(d.char); });
+
+
+</script>
+
+
+</body>
