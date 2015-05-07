@@ -12,12 +12,46 @@
 .line {
   fill: none;
   stroke: steelblue;
-  stroke-width: 1.5px;
+  stroke-width: 2.5px;
 }
 
 </style>
 
 <body>
+
+<script>
+ function makeAxies(svg, x, y, ytext){
+     
+     var xAxis = d3.svg.axis().scale(x).orient("bottom").tickSize(6, 0 , 0);
+     xAxis.tickFormat(d3.format("d"));
+     var yAxis = d3.svg.axis().scale(y).orient("left").tickSize(6, 0, 0);
+     
+     var xax = svg.append("g").attr("class", "x axis")
+                  .attr("transform", "translate(0," + height + ")")
+	              .call(xAxis.ticks(15));
+     
+     xax.append("text")
+	    .attr("y", 26)
+	    .attr("x", width / 2 - 50)
+	    .attr("dx", "0.71em")
+	    .style("text-anchor", "end", " grid")
+	    .text("page");
+     
+     var yax = svg.append("g")
+                  .attr("class", "y axis")
+                  .call(yAxis);
+     
+     yax.append("text")
+	    .attr("y", 6)
+	    .attr("x", -5 * ytext.length)
+	    .attr("transform", "rotate(-90)")
+	    .attr("dy", "0.71em")
+	    .style("text-anchor", "end", " grid")
+	    .text(ytext);
+ };
+
+</script>
+
 
 <script>
  numPages = 180
@@ -41,29 +75,43 @@
                  .sort(function (a, b) {return a - b;})
 
  function completePath(data) {
-     var pathdata = chars.map(function(character) {
-         var charData = data.filter(function(d) {return d.char == character;});
-         charData.forEach(function(d, i) {d.present = i % 2 == 0;});
-         return charData;
-     });
-     return chars.map(function(character) {
+     filledPaths = {};
+     chars.forEach(function(character) {
          var charData = data.filter(function(d) {return d.char == character;})
                             .sort(function(a, b) {return a.page - b.page;});
          console.log(charData);
          charData.forEach(function(d, i) {d.present = i % 2 == 0;})
          var filledPath = _.clone(sigPages);
-         var i = 1;
+         var i = 0;
          filledPath.forEach(function(page, j) {
-             if (i < charData.length && charData[i].page <= page)
+             if (i + 1 < charData.length && charData[i].page < page)
                  i++;
-             filledPath[j] = {"char":character, "page":page, "present":charData[i-1].present};
+             if (charData[i].page == page)
+                 filledPath[j] = {"char":character, "page":page, "present":true};
+             else if (charData[i].page < page)
+                 filledPath[j] = {"char":character, "page":page, "present":false};
+             else
+                 filledPath[j] = {"char":character, "page":page, "present":!charData[i].present};
          });
-         return filledPath;
+         filledPaths[character] = filledPath;
      });
+     return filledPaths;
  };
 
-
+ var paths = completePath(data);
  
+ function transpose(a) {
+     return _.zip.apply(_, a);
+ } 
+
+ var pageGroups = {}
+ 
+ transpose(_.values(paths)).forEach(function(pageChars) {
+     pagePresent = pageChars.filter(function(d) {return d.present;});
+     if (pagePresent.length > 0)
+         pageGroups[pagePresent[0].page] = pagePresent.map(function(d) {return d.char;});         
+ });
+
 
  var margin = {top: 20, right: 20, bottom: 30, left: 40},
      width = 900 - margin.left - margin.right,
@@ -81,28 +129,35 @@
            .range([0,width]);
  
  var y = d3.scale.linear()
-           .domain([0, chars.length])
+           .domain([0, chars.length + 1])
            .range([height, 0]);
+
+ makeAxies(svg, x, y, "group");
 
  var color = d3.scale.category10()
                .domain(chars);
 
  
  function groupNumber(char, page){
-     return Math.floor(Math.random() * y.domain()[1])
+     group = pageGroups[page];
+     if (_.contains(group, char))
+         return 0;
+     return chars.indexOf(char) + 1;
  }
 
  var line = d3.svg.line()
               .x(function(d) { return x(d.page); })
-              .y(function(d) { return y(groupNumber(d.char, d.page)); })
-              .interpolate("basis");
+              .y(function(d) { return y(groupNumber(d.char, d.page)) + 5 * chars.indexOf(d.char); })
+              .interpolate("linear");
  
- svg.append("path")
-    .datum(data)
-    .attr("class", "line")
-    .attr("d", line)
-    .style("stroke", function(d) { return color(d.char); });
-
+ chars.forEach(function(char) {
+     svg.append("path")
+        .datum(paths[char])
+        .attr("class", "line")
+        .attr("d", line)
+        .style("stroke", function(d) { return char; })
+        .style("stroke-dasharray", function(d) { return  d.present ? none : [3,3]; });
+ });
 
 </script>
 
