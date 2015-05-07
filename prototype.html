@@ -83,16 +83,19 @@
          charData.forEach(function(d, i) {d.present = i % 2 == 0;})
          var filledPath = _.clone(sigPages);
          var i = 0;
+
          filledPath.forEach(function(page, j) {
-             if (i + 1 < charData.length && charData[i].page < page)
+             if (i >= charData.length)
+                 p = false;
+             else if (charData[i].page == page){
+                 p = true; 
                  i++;
-             if (charData[i].page == page)
-                 filledPath[j] = {"char":character, "page":page, "present":true};
-             else if (charData[i].page < page)
-                 filledPath[j] = {"char":character, "page":page, "present":false};
+             }
              else
-                 filledPath[j] = {"char":character, "page":page, "present":!charData[i].present};
+                 p = !charData[i].present;
+             filledPath[j] = {"char":character, "page":page, "present":p};
          });
+
          filledPaths[character] = filledPath;
      });
      return filledPaths;
