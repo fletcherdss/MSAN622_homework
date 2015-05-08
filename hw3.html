@@ -243,12 +243,121 @@
 
 </script>
 
-<div class="col-md-4">
-        <h2 class="page-header"><a name="featuresc"></a>Basic Functionality</h2>
-	
-        <ul>
-	        <li> A line plot shows the price of fuel over time</li>
-            <li> A stacked area plot shows Passenger deaths broken up by where in the car they
-            were sitting.</li>
-        </ul>
+
+<div class="row">
+    <div class="col-md-4">
+        <h2 class="page-header"><a name="about"></a>The Data Set</h2> 
+            <div class="media-body">
+                <p>
+	                The data is currently mocked up, but the final project is based
+                    on data extracted from one or more actual books. 
+
+
+                </p>
+
+                
+            </div>
+
+            <div class="col-md-4">
+                <h2 class="page-header"><a name="featuresc"></a>Planned tools. </h2>
+                <p>
+                    The data set it self is a rather large collection of RDF files. 
+                    Too large to process in D3. Rather I will extract the data I need 
+                    using the python library RDFLib, depending the the visualizations.
+                    One useful statistic for analysing text is word frequencies. I will
+                    probably compute a number of JSON objects with the frequencies of
+                    different words for individual books, as well as a across categories.
+                </p>
+                
+                <p>
+                    I also plan to employ some tools for EDA, likely in python or R.
+                    As D3 plots can be timeconsuming to create I will likely
+                    experiment with what makes for a good visualization using
+                    something like ggplot. Other tools like plotly or 
+                    tablau might also prove useful.
+                    
+                    <ul>
+	                    <li> A line plot shows the price of fuel over time</li>
+                        <li> A stacked area plot shows Passenger deaths broken up by where in the car they
+                            were sitting.</li>
+                    </ul>
+            </div>
+            
+            <div class="col-md-4">
+                <h2 class="page-header"><a name="featuresc"></a>Planned Techniques. </h2>
+                <p>
+                    I plan on implementing 3 types of visualization. First I seek to 
+                    compare individual books, choosen from a drop down menu, on
+                    various statistics such as vocablary and length. Individual Genres 
+                    can also be compared in this manner. Group bars would probably
+                    well suited to this task, though small multiples might be another option.
+                </p>
+                <p>
+                    I also am interested in doing a time series visualization, 
+                    showing how language changes over time. 
+                    I would probably find some words that are interesting and plot the
+                    frequency of a given word across all books published in a given
+                    year. I may also stratify by Genre. 
+                </p>
+                
+
+                <p>
+                    The final visualization will be more focused on
+                    understanding the topic of individual books. One
+                    aspect I will explore is mapping cooccurance of characters
+                    in works of fiction. I might try to do a visualization such 
+                    with the x-axis the word position on the book, and 
+                    the y axis the occurance of characters names. I might 
+                    try to follow a visualization like this one from 
+                    <a href="https://xkcd.com/657/large/"> XKCD </a>, 
+                    though it would be difficult to get time as accurate. 
+                    
+                </p>
+                
+                
+            </div>
+            <div class="col-md-4">
+                <h2 class="page-header"><a name="featuresc"></a>Planned Techniques. </h2>
+                <p>
+                    Most of my planned interation will be around allowing the user
+                    to choose which data to emphasize. The user will have
+                    the option of choosing which words they want to visualize,
+                    as well as which books or collections of the books they 
+                    are interested in.
+                </p>
+                
+                <p>
+                    In the visualization of occurance of characters, the 
+                    user will have the option of moving character lines
+                            to make the visualization less messy. It would
+                    be impossible to automatically arrange the 
+                    data as neatly as it is in the XKCD visualization
+                    but if the user could drag to re-organize things
+                    might be more readable.
+                    
+                </p>
+
+                
+            </div>
+            
+            <div class="col-md-4">
+                
+                <h2 class="page-header"><a name="featuresc"></a>Planned Interface </h2>
+                <img src="img/plot3.jpg" alt="Mountain View">
+                <p style="float: left">
+                    <img src="img/plot1.jpg" alt="Mountain View" style="width:304px;height:228px;">
+                    <img src="img/plot2.jpg" alt="Mountain View" style="width:304px;height:228px;">
+                        </p>
+                        
+                        <p>
+                            Lines indicate characters, solid lines indicate the character has 
+                            been mentioned on that page. The x axis is page number, the 
+                            y-axis is arbitrary. The lines can be dragged by the user
+                            to improve the quality of the visualization. 
+                        </p>
+                        
+
+
+            </div>
+    </div>
 </div>
