@@ -50,7 +50,6 @@ d3.json(url.world, function(mapError, mapJSON) {
     // and drawing the data values
     d3.csv(url.earthquakes, function(dataError, dataJSON) {
         if (processError(dataError)) return;
-
         chart = chart.values(dataJSON);
         chart("map");
     });

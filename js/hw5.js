@@ -89,7 +89,7 @@ function symbolMap() {
         // this just reduces our search time for specific states
         var world = svg.append("g").attr("id", "world");
 //        var states  = svg.append("g").attr("id", "states");
-        var countries  = svg.append("g").attr("id", "states");
+        var countries  = svg.append("g").attr("id", "countries");
         var symbols = svg.append("g").attr("id", "dots");
 
         // show that only 1 feature for land
@@ -97,7 +97,7 @@ function symbolMap() {
 
         // show that we have an array of features for states
 //        console.log(topojson.feature(map, map.objects.states));
-
+        values.forEach(function (d) {d.latitude = +d.latitude; d.longitude = +d.longitude;});
         // draw base map
         world.append("path")
             // use datum here because we only have 1 feature,
@@ -116,22 +116,24 @@ function symbolMap() {
             // set the ID so we can select it later
             .attr("id", function(d) { return "country" + d.id; })
             .classed({"country": true});
+        console.log(values);
 
         // draw symbols
         symbols.selectAll("circle")
             .data(values)
             .enter()
             .append("circle")
+//            .filter(function(d) {return !isNaN(d.lon) && !isNaN(d.lat);}) 
             .attr("r", function(d, i) {
                 return radius(value(d));
             })
             .attr("cx", function(d, i) {
                 // projection takes [longitude, latitude]
                 // and returns [x, y] as output
-                return projection([d.lon, d.lat])[0];
+                return projection([d.longitude, d.latitude])[0];
             })
             .attr("cy", function(d, i) {
-                return projection([d.lon, d.lat])[1];
+                return projection([d.longitude, d.latitude])[1];
             })
             .classed({"symbol": true})
             .on("mouseover", showHighlight)
