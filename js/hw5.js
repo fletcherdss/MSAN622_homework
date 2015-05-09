@@ -70,11 +70,11 @@ function symbolMap() {
 
         // update project scale
         // (this may need to be customized for different projections)
-        projection = projection.scale(bbox.width);
+        projection = projection.scale(bbox.width * 0.09);
 
         // update projection translation
         projection = projection.translate([
-            bbox.width / 2,
+            bbox.width / 2 ,
             bbox.height / 2
         ]);
 
@@ -87,8 +87,9 @@ function symbolMap() {
 
         // create groups for each of our components
         // this just reduces our search time for specific states
-        var country = svg.append("g").attr("id", "country");
-        var states  = svg.append("g").attr("id", "states");
+        var world = svg.append("g").attr("id", "world");
+//        var states  = svg.append("g").attr("id", "states");
+        var countries  = svg.append("g").attr("id", "states");
         var symbols = svg.append("g").attr("id", "dots");
 
         // show that only 1 feature for land
@@ -98,23 +99,23 @@ function symbolMap() {
 //        console.log(topojson.feature(map, map.objects.states));
 
         // draw base map
-        country.append("path")
+        world.append("path")
             // use datum here because we only have 1 feature,
             // not an array of features (needed for data() call)
             .datum(topojson.feature(map, map.objects.land))
             .attr("d", path)
-            .classed({"country": true});
+            .classed({"world": true});
 
         // draw states (invisible for now)
         // may need to adjust to draw countries instead?
-        states.selectAll("path")
-            .data(topojson.feature(map, map.objects.states).features)
+        countries.selectAll("path")
+            .data(topojson.feature(map, map.objects.countries).features)
             .enter()
             .append("path")
             .attr("d", path)
             // set the ID so we can select it later
-            .attr("id", function(d) { return "state" + d.id; })
-            .classed({"state": true});
+            .attr("id", function(d) { return "country" + d.id; })
+            .classed({"country": true});
 
         // draw symbols
         symbols.selectAll("circle")
@@ -135,6 +136,7 @@ function symbolMap() {
             .classed({"symbol": true})
             .on("mouseover", showHighlight)
             .on("mouseout", hideHighlight);
+
     }
 
     /*
