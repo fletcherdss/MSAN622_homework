@@ -38,14 +38,11 @@ function symbolMap() {
 
     var lookup = {};
 
-    var projection = d3.geo.mercator()
-        .scale((width + 1) / 2 / Math.PI)
-        .translate([width / 2, height / 2])
-        .precision(.1);
-
     var color = d3.scale.threshold()
         .domain([15, 30, 45, 90, 1000])
         .range(["#ffffcc","#c2e699","#78c679","#31a354","#006837"]);
+
+
 
     var width = 960;
     var height = 960;
@@ -69,18 +66,19 @@ function symbolMap() {
 
         updateLog("Drawing map... please wait.");
 
-        var svg = d3.select("svg#" + id);
+        var svg = d3.select("svg#" + id)
+            .attr("width", width)
+            .attr("height", height);
         var bbox = svg.node().getBoundingClientRect();
 
         // update project scale
         // (this may need to be customized for different projections)
-        projection = projection.scale(bbox.width * 0.09);
-
-        // update projection translation
-        projection = projection.translate([
-            bbox.width / 2 ,
-            bbox.height / 2
-        ]);
+        projection = d3.geo.mercator().scale((bbox.width + 1) / 2 / Math.PI)
+            .translate([
+                bbox.width / 2 ,
+                bbox.height / 2
+            ])
+            .precision(.1);
 
         // set path generator based on projection
         var path = d3.geo.path().projection(projection);
