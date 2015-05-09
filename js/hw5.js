@@ -276,9 +276,7 @@ function symbolMap() {
                 "state": true
             });
 
-        updateLog(d.city + ", " + d.state +
-            " received an average of " + d.precip +
-            " inches of precipitation.");
+        updateLog("Magnitude " + d.mag + " earthquake located " + d.place);
     }
 
     // called on mouseout
