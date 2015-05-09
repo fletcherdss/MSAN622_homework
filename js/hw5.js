@@ -43,6 +43,10 @@ function symbolMap() {
         .translate([width / 2, height / 2])
         .precision(.1);
 
+    var color = d3.scale.threshold()
+        .domain([15, 30, 45, 90, 1000])
+        .range(["#ffffcc","#c2e699","#78c679","#31a354","#006837"]);
+
     var width = 960;
     var height = 960;
 
@@ -135,6 +139,7 @@ function symbolMap() {
             .attr("cy", function(d, i) {
                 return projection([d.longitude, d.latitude])[1];
             })
+            .attr("fill", function(d, i) {return color(+d.depth);})
             .classed({"symbol": true})
             .on("mouseover", showHighlight)
             .on("mouseout", hideHighlight);
