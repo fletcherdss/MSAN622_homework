@@ -1,0 +1,13 @@
+[
+ {"char":"green", "page":1},
+ {"char":"green", "page":20},
+ {"char":"red", "page":21},
+ {"char":"brown", "page":40},
+ {"char":"red", "page":60},
+ {"char":"green", "page":100},
+ {"char":"green", "page":120},
+ {"char":"brown", "page":140},
+ {"char":"pink", "page":140},
+ {"char":"pink", "page":160},
+ {"char":"green", "page":160} 
+]

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Project Prototype</title>
+    <script type="text/javascript" src="js/d3.min.js"></script>
+    <script type="text/javascript" src="js/underscore-min.js"></script>
+</head>
+
+<style>
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  position: relative;
+  width: 960px;
+}
+
+.axis { font: 13px sans-serif; }
+
+.axis path,
+.axis line {
+  fill: #FFFFFF;
+  stroke: black;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {display: none;}
+.y.axis path {display: black;}
+.y.axis .tick line {stroke: lightgrey;}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 2.5px;
+}
+
+label {
+  position: absolute;
+  top: 90px;
+  right: 60px;
+}
+
+</style>
+
+<body>
+
+
+<title>Project Prototype</title>
+
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/bootstrap-theme.min.css" rel="stylesheet">
+
+<style type="text/css">
+    body {
+        padding-top: 50px;
+        padding-bottom: 20px;
+    }
+</style>
+
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+		<button type="button" class="navbar-toggle collapsed" 
+		    data-toggle="collapse" data-target="#navbar" 
+		    aria-expanded="false" aria-controls="navbar">
+			<span class="sr-only">Toggle Navigation</span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+		</button>
+		<a class="navbar-brand" href="./#">MSAN 622</a>
+        </div>
+	
+        <div id="navbar" class="navbar-collapse collapse">
+		<ul class="nav navbar-nav">
+			<li><a href="./#homework">Homework</a></li>
+			<li><a href="./#project">Project</a></li>
+			<li><a href="./#participation">Participation</a></li>
+		</ul>
+		
+		<ul class="nav navbar-nav navbar-right">
+			<li><a href="./#about">About</a></li>
+			<li><a href="./#contact">Contact</a></li>
+		</ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</nav>
+
+
+
+
+
+<label><input type="checkbox"> Center Groups</label>
+<script>
+ var margin = {top: 20, right: 20, bottom: 40, left: 80},
+     width = 900 - margin.left - margin.right,
+     height = 500 - margin.top - margin.bottom;
+
+ function makeAxies(svg, x, y, ytext){
+     
+     var xAxis = d3.svg.axis().scale(x).orient("bottom").tickSize(6, 0 , 0);
+     xAxis.tickFormat(d3.format("d"));
+     var yAxis = d3.svg.axis().scale(y).orient("left").tickSize(6, 0, 0);
+     
+     var xax = svg.append("g").attr("class", "x axis")
+                  .attr("transform", "translate(0," + height + ")")
+	              .call(xAxis.ticks(15));
+     
+     xax.append("text")
+	    .attr("y", 36)
+	    .attr("x", width / 2 - 50)
+	    .attr("dx", "0.71em")
+	    .style("text-anchor", "end", " grid")
+	    .text("page");
+ };
+
+</script>
+
+
+<script>
+ numPages = 180
+
+ var data = [
+     {"char":"green", "page":1},
+     {"char":"green", "page":20},
+     {"char":"red", "page":20},
+     {"char":"brown", "page":40},
+     {"char":"red", "page":60},
+     {"char":"green", "page":100},
+     {"char":"brown", "page":120},
+     {"char":"pink", "page":140},
+     {"char":"pink", "page":160},
+     {"char":"green", "page":160} 
+ ]
+
+ var chars = _.unique(data.map(function (d) {return d.char;}))
+ var sigPages = _.unique(data.map(function (d) {return d.page;}))
+                 .sort(function (a, b) {return a - b;})
+
+ function completePath(data) {
+     filledPaths = {};
+     chars.forEach(function(character) {
+         var charData = data.filter(function(d) {return d.char == character;})
+                            .sort(function(a, b) {return a.page - b.page;});
+         console.log(charData);
+         charData.forEach(function(d, i) {d.present = i % 2 == 0;})
+         var filledPath = _.clone(sigPages);
+         var i = 0;
+
+         filledPath.forEach(function(page, j) {
+             if (i >= charData.length)
+                 p = false;
+             else if (charData[i].page == page){
+                 p = true; 
+                 i++;
+             }
+             else
+                 p = !charData[i].present;
+             filledPath[j] = {"char":character, "page":page, "present":p};
+         });
+
+         filledPaths[character] = filledPath;
+     });
+     return filledPaths;
+ };
+
+ var paths = completePath(data);
+ 
+ function transpose(a) {
+     return _.zip.apply(_, a);
+ } 
+
+ var pageGroups = {}
+ 
+ transpose(_.values(paths)).forEach(function(pageChars) {
+     pagePresent = pageChars.filter(function(d) {return d.present;});
+     if (pagePresent.length > 0)
+         pageGroups[pagePresent[0].page] = pagePresent.map(function(d) {return d.char;});         
+ });
+
+
+
+ var svg = d3.select("body").append("svg")
+	          .attr("width", width + margin.left + margin.right)
+	          .attr("height", height + margin.top + margin.bottom)
+	          .append("g")
+	          .attr("transform",
+                    "translate(" + (margin.left) + "," + (margin.top) + ")");
+
+ var x = d3.scale.linear()
+           .domain(d3.extent(data, function(d) {return d.page;}))
+           .range([0,width]);
+ 
+ var y = d3.scale.linear()
+           .domain([0, chars.length + 1])
+           .range([height, 0]);
+
+ makeAxies(svg, x, y, "group");
+
+ var color = d3.scale.category10()
+               .domain(chars);
+
+ 
+ function groupNumber(char, page, defaultGroup){
+     group = pageGroups[page];
+     if (_.contains(group, char)){
+         if (defaultGroup >= 0)
+             return defaultGroup;
+         return d3.median(group.map(function (c) {return chars.indexOf(c) + 1;}));
+     }
+     return chars.indexOf(char) + 1;
+ }
+
+
+
+ d3.select("input").on("change", drawLines);
+ drawLines()
+
+ function drawLines() {
+     var c = this.checked ? -1 : 0;
+
+     ypos = function(d) {return y(groupNumber(d.char, d.page, c)) - 5 * chars.indexOf(d.char); }
+     var line = d3.svg.line()
+                  .x(function(d) { return x(d.page); })
+                  .y(ypos)
+                  .interpolate("monotone");
+     
+     chars.forEach(function(char) {
+         lines = svg.select("." + char).datum(paths[char]);
+         lines.remove();
+
+         l = svg.append("g").attr("class", char).datum(paths[char]);
+         l.append("path")
+          .attr("class", "line")
+          .attr("d", line)
+          .style("stroke", function(d) { return char; });
+//          .style("stroke-dasharray", function(d) { return  d.present ? none : [3,3]; });
+
+         l.append("text")
+	      .attr("y", ypos(paths[char][0]) + 3)
+	      .attr("x", -20)
+	      .attr("dx", "0.71em")
+	      .style("text-anchor", "end")
+          .attr("fill", char)
+	      .text(char);
+
+     });
+  }
+
+</script>
+
+
+<div class="row">
+    <div class="col-md-10">
+        <h2 class="page-header"><a name="about"></a>The Data Set</h2> 
+            <div class="media-body">
+                <p>
+	                The data is currently mocked up, but the final project is based
+                    on data extracted from one or more actual books. The data consists
+                    of names of characters and where that characters name is mentioned in
+                    the book. The data it self is sparsified. For each character There
+                    are records marking the start and end of sections where that character
+                    is mentioned frequently. You can see the full details of the
+                    <a href="./projectdata.html"> Project Gutenberg  
+                        data set </a>. The data set has not
+                    changed, though I might be using a smaller portion than before and focusing
+                    exclusively on fiction.
+                </p>
+
+                
+            </div>
+
+    </div>
+
+    <div class="col-md-10">
+        <h2 class="page-header"><a name="featuresc"></a> Summary </h2>
+        <div class="media-body">
+            <p>
+                Each line represents a character. If two lines are near to each other
+                in a certain page interval 
+                that indicates that that they are both being mentioned on those pages.
+                Currently being at the bottom of the graph indicates those 
+                characters are being mentioned, while being away from the bottom
+                indicates that they not being mentioned. I plan to have
+                the characters not currently in the action be shown as
+                dashed lines, but that has not implemented yet.
+            </p>
+            <p>
+                The toggle box in the corner moves the characters currently
+                present towards the middle, making the lines less tangled. 
+                This presently this is somewhat confusing as the red line,
+                appears to be present with the other characters 
+                when in fact it is merely happens to lie in the center. 
+                I plan to have move the characters not presently being mentioned away
+                from those that are, but that has not yet been implemented.
+            </p>
+            <p>
+                The plot shown is the top plot on the <a href="./projectsketch.html"> 
+                original sketch </a>. It has remained true to it's original purpose,
+                though some of the functionality shown has not yet been implemented.
+                The bottom plots might change slightly. The bar plot will
+                probably made specific to character names, and the line plot may be
+                counts of character name by chapter.
+
+            </p>
+            
+        </div>
+    </div>
+</div>
+
+</body>
