@@ -5,6 +5,7 @@
     <title>Project Prototype</title>
     <script type="text/javascript" src="js/d3.min.js"></script>
     <script type="text/javascript" src="js/underscore-min.js"></script>
+    <script type="text/javascript" src="js/project.js"></script>
 </head>
 
 <style>
@@ -37,6 +38,18 @@ body {
 label {
   position: absolute;
   top: 90px;
+  right: 60px;
+}
+
+.center {
+  position: absolute;
+  top: 90px;
+  right: 60px;
+}
+
+.trim {
+  position: absolute;
+  top: 120px;
   right: 60px;
 }
 
@@ -93,7 +106,8 @@ label {
 </nav>
 
 
-<label><input type="checkbox"> Center Groups</label>
+<label class ="center"><input type="checkbox"> Center Groups</label>
+<label class ="trim"><input type="checkbox"> Trim Paths</label> 
 <script>
  var margin = {top: 20, right: 20, bottom: 40, left: 80},
      width = 900 - margin.left - margin.right,
@@ -122,7 +136,7 @@ label {
 
 <script>
  numPages = 180
-
+ /*
  var data = [
      {"char":"green", "page":1},
      {"char":"green", "page":20},
@@ -135,40 +149,27 @@ label {
      {"char":"pink", "page":160},
      {"char":"green", "page":160} 
  ]
+ */
+ var data_ints = [
+     {"char":"green", "page":[1, 20]},
+     {"char":"red", "page":[20, 60]},
+     {"char":"brown", "page":[40, 120]},
+     {"char":"green", "page":[100, 160]},
+     {"char":"pink", "page":[140, 160]},
+ ]
+
+ var data = _.flatten(data_ints.map(function(d) {
+     return [{"char":d.char, "page":d.page[0]}, {"char":d.char, "page":d.page[1]}];
+ }));
 
  var chars = _.unique(data.map(function (d) {return d.char;}))
+
+
  var sigPages = _.unique(data.map(function (d) {return d.page;}))
-                 .sort(function (a, b) {return a - b;})
+                 .sort(function (a, b) {return a - b;});
 
- function completePath(data) {
-     filledPaths = {};
-     chars.forEach(function(character) {
-         var charData = data.filter(function(d) {return d.char == character;})
-                            .sort(function(a, b) {return a.page - b.page;});
-         console.log(charData);
-         charData.forEach(function(d, i) {d.present = i % 2 == 0;})
-         var filledPath = _.clone(sigPages);
-         var i = 0;
+ var paths = completePaths(data);
 
-         filledPath.forEach(function(page, j) {
-             if (i >= charData.length)
-                 p = false;
-             else if (charData[i].page == page){
-                 p = true; 
-                 i++;
-             }
-             else
-                 p = !charData[i].present;
-             filledPath[j] = {"char":character, "page":page, "present":p};
-         });
-
-         filledPaths[character] = filledPath;
-     });
-     return filledPaths;
- };
-
- var paths = completePath(data);
- 
  function transpose(a) {
      return _.zip.apply(_, a);
  } 
@@ -215,12 +216,26 @@ label {
  }
 
 
+ var trimmedPaths = {}
+ chars.forEach(function(c) {trimmedPaths[c] = trimPath(paths[c]);})
 
- d3.select("input").on("change", drawLines);
- drawLines()
+ var state = {trim:false, center:false}
 
- function drawLines() {
-     var c = this.checked ? -1 : 0;
+ d3.select(".center").select("input").on("change", function() {
+     state.center = this.checked;
+     drawLines(state);
+ });
+ d3.select(".trim").select("input").on("change", function() {
+     state.trim = this.checked; 
+     drawLines(state);
+ });
+ drawLines(state)
+
+ function drawLines(state) {
+     var c = state.center ? -1 : 0;
+     var pths = paths;
+     if (state.trim)
+         pths = trimmedPaths;
 
      ypos = function(d) {return y(groupNumber(d.char, d.page, c)) - 5 * chars.indexOf(d.char); }
      var line = d3.svg.line()
@@ -229,10 +244,10 @@ label {
                   .interpolate("monotone");
      
      chars.forEach(function(char) {
-         lines = svg.select("." + char).datum(paths[char]);
+         lines = svg.select("." + char).datum(pths[char]);
          lines.remove();
 
-         l = svg.append("g").attr("class", char).datum(paths[char]);
+         l = svg.append("g").attr("class", char).datum(pths[char]);
          l.append("path")
           .attr("class", "line")
           .attr("d", line)
@@ -240,7 +255,7 @@ label {
 //          .style("stroke-dasharray", function(d) { return  d.present ? none : [3,3]; });
 
          l.append("text")
-	      .attr("y", ypos(paths[char][0]) + 3)
+	      .attr("y", ypos(pths[char][0]) + 3)
 	      .attr("x", -20)
 	      .attr("dx", "0.71em")
 	      .style("text-anchor", "end")

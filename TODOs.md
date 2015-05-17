@@ -5,7 +5,7 @@
 - Parse a book into real data
 - add histogram of character mentions
 - add line graph of character mentions by page
-- end line when character is no longer mentioned
+- ~~end line when character is no longer mentioned~~
 
 #Medium Priority:
 - Eliminate group gaps
