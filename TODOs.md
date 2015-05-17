@@ -1,7 +1,7 @@
 
 
 #Top Priority:
-- Charge the data format so it is not order dependant.
+- ~~Charge the data format so it is not order dependant.~~
 - Parse a book into real data
 - add histogram of character mentions
 - add line graph of character mentions by page
