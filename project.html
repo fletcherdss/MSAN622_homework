@@ -35,22 +35,16 @@ body {
   stroke-width: 2.5px;
 }
 
-label {
-  position: absolute;
-  top: 90px;
-  right: 60px;
-}
-
 .center {
-  position: absolute;
+  position: relative;
   top: 90px;
-  right: 60px;
+  right: -1360px;
 }
 
 .trim {
-  position: absolute;
+  position: relative;
   top: 120px;
-  right: 60px;
+  right: -1360px;
 }
 
 </style>
@@ -110,8 +104,8 @@ label {
 <label class ="trim"><input type="checkbox"> Trim Paths</label> 
 <script>
  var margin = {top: 20, right: 20, bottom: 40, left: 80},
-     width = 900 - margin.left - margin.right,
-     height = 500 - margin.top - margin.bottom;
+     width = 1400 - margin.left - margin.right,
+     height = 800 - margin.top - margin.bottom;
 
  function makeAxies(svg, x, y, ytext){
      
@@ -203,21 +197,7 @@ label {
 
  var color = d3.scale.category10()
                .domain(chars);
-
  
- function groupNumber(char, page, defaultGroup){
-     group = pageGroups[page];
-     if (_.contains(group, char)){
-         if (defaultGroup >= 0)
-             return defaultGroup;
-         return d3.median(group.map(function (c) {return chars.indexOf(c) + 1;}));
-     }
-     return chars.indexOf(char) + 1;
- }
-
-
- var trimmedPaths = {}
- chars.forEach(function(c) {trimmedPaths[c] = trimPath(paths[c]);})
 
  var state = {trim:false, center:false}
 
@@ -229,13 +209,21 @@ label {
      state.trim = this.checked; 
      drawLines(state);
  });
- drawLines(state)
-
+ drawLines(state);
+/*
+ d3.json("/data/blackar.txt",function (data) {
+     chars = _.unique(_.flatten(data));
+     console.log(buildIntervals(40, chars, data));
+ });
+*/
  function drawLines(state) {
      var c = state.center ? -1 : 0;
      var pths = paths;
-     if (state.trim)
+     if (state.trim) {
+         var trimmedPaths = {}
+         chars.forEach(function(c) {trimmedPaths[c] = trimPath(paths[c]);})
          pths = trimmedPaths;
+     }
 
      ypos = function(d) {return y(groupNumber(d.char, d.page, c)) - 5 * chars.indexOf(d.char); }
      var line = d3.svg.line()
