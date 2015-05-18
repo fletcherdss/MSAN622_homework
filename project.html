@@ -162,12 +162,12 @@ body {
  ]
 
  d3.json("/data/blackar.txt", function (rawData) {
-//     var chars = _.unique(_.flatten(rawData));
-     var data_i = data_ints;
-     var chars = _.unique(data_i.map(function (d) {return d.char;}));
+     var chars = _.unique(_.flatten(rawData));
+//     var data_i = data_ints;
+//     var chars = _.unique(data_i.map(function (d) {return d.char;}));
 
-//     chars = chars.filter(function(x, i) {return i < 5;});
-//     data_ints = buildIntervals(40, chars, rawData)
+     chars = chars.filter(function(x, i) {return i < 3;});
+     data_ints = buildIntervals(40, chars, rawData);
      var data = _.flatten(data_ints.map(function(d) {
          return [{"char":d.char, "page":d.page[0]}, {"char":d.char, "page":d.page[1]}];
      }));         
@@ -221,7 +221,7 @@ body {
          l.append("path")
           .attr("class", "line")
           .attr("d", line)
-          .style("stroke", function(d) { return char; });
+          .style("stroke", function(d) { return color(char); });
 //          .style("stroke-dasharray", function(d) { return  d.present ? none : [3,3]; });
 
          l.append("text")
@@ -229,7 +229,7 @@ body {
 	      .attr("x", -20)
 	      .attr("dx", "0.71em")
 	      .style("text-anchor", "end")
-          .attr("fill", char)
+          .attr("fill", color(char))
 	      .text(char);
 
      });
