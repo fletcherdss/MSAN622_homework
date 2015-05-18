@@ -1,6 +1,9 @@
 
 
  function completePaths(data) {
+     var sigPages = _.unique(data.map(function (d) {return d.page;}))
+         .sort(function (a, b) {return a - b;});
+
      filledPaths = {};
      var chars = _.unique(data.map(function (d) {return d.char;}))
      chars.forEach(function(character) {
@@ -80,12 +83,25 @@ d3.json("/data/blackar.txt",function (data) {
 });
 */
 
- function groupNumber(char, page, defaultGroup){
+ function getGroups(paths){
+     var pageGroups = {}
+     transpose(_.values(paths)).forEach(function(pageChars) {
+         pagePresent = pageChars.filter(function(d) {return d.present;});
+         if (pagePresent.length > 0)
+             pageGroups[pagePresent[0].page] = pagePresent.map(function(d) {return d.char;});         
+     });
+     return pageGroups;
+ }
+
+ function groupNumber(character, page, paths, chars, defaultGroup){
+     pageGroups = getGroups(paths)
      group = pageGroups[page];
-     if (_.contains(group, char)){
+     if (_.contains(group, character)){
          if (defaultGroup >= 0)
              return defaultGroup;
          return d3.median(group.map(function (c) {return chars.indexOf(c) + 1;}));
      }
-     return chars.indexOf(char) + 1;
+     return chars.indexOf(character) + 1;
  }
+
+ function transpose(a) { return _.zip.apply(_, a);} 

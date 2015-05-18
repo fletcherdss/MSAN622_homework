@@ -130,53 +130,6 @@ body {
 
 <script>
  numPages = 180
- /*
- var data = [
-     {"char":"green", "page":1},
-     {"char":"green", "page":20},
-     {"char":"red", "page":20},
-     {"char":"brown", "page":40},
-     {"char":"red", "page":60},
-     {"char":"green", "page":100},
-     {"char":"brown", "page":120},
-     {"char":"pink", "page":140},
-     {"char":"pink", "page":160},
-     {"char":"green", "page":160} 
- ]
- */
- var data_ints = [
-     {"char":"green", "page":[1, 20]},
-     {"char":"red", "page":[20, 60]},
-     {"char":"brown", "page":[40, 120]},
-     {"char":"green", "page":[100, 160]},
-     {"char":"pink", "page":[140, 160]},
- ]
-
- var data = _.flatten(data_ints.map(function(d) {
-     return [{"char":d.char, "page":d.page[0]}, {"char":d.char, "page":d.page[1]}];
- }));
-
- var chars = _.unique(data.map(function (d) {return d.char;}))
-
-
- var sigPages = _.unique(data.map(function (d) {return d.page;}))
-                 .sort(function (a, b) {return a - b;});
-
- var paths = completePaths(data);
-
- function transpose(a) {
-     return _.zip.apply(_, a);
- } 
-
- var pageGroups = {}
- 
- transpose(_.values(paths)).forEach(function(pageChars) {
-     pagePresent = pageChars.filter(function(d) {return d.present;});
-     if (pagePresent.length > 0)
-         pageGroups[pagePresent[0].page] = pagePresent.map(function(d) {return d.char;});         
- });
-
-
 
  var svg = d3.select("body").append("svg")
 	          .attr("width", width + margin.left + margin.right)
@@ -185,38 +138,65 @@ body {
 	          .attr("transform",
                     "translate(" + (margin.left) + "," + (margin.top) + ")");
 
- var x = d3.scale.linear()
-           .domain(d3.extent(data, function(d) {return d.page;}))
-           .range([0,width]);
- 
- var y = d3.scale.linear()
-           .domain([0, chars.length + 1])
-           .range([height, 0]);
-
- makeAxies(svg, x, y, "group");
-
- var color = d3.scale.category10()
-               .domain(chars);
- 
-
+ //An object for keeping track of the interative features and handling updates
  var state = {trim:false, center:false}
+ state.update = function (paths, chars) {
+     st = this
+     drawLines(st, paths,chars);
+     d3.select(".center").select("input").on("change", function() {
+         state.center = this.checked;
+         drawLines(st, paths, chars);
+     });
+     d3.select(".trim").select("input").on("change", function() {
+         state.trim = this.checked; 
+         drawLines(st, paths, chars);
+     });
+ }
 
- d3.select(".center").select("input").on("change", function() {
-     state.center = this.checked;
-     drawLines(state);
+ var data_ints = [
+     {"char":"green", "page":[1, 20]},
+     {"char":"red", "page":[20, 60]},
+     {"char":"brown", "page":[40, 120]},
+     {"char":"green", "page":[100, 160]},
+     {"char":"pink", "page":[140, 160]},
+ ]
+
+ d3.json("/data/blackar.txt", function (rawData) {
+//     var chars = _.unique(_.flatten(rawData));
+     var data_i = data_ints;
+     var chars = _.unique(data_i.map(function (d) {return d.char;}));
+
+//     chars = chars.filter(function(x, i) {return i < 5;});
+//     data_ints = buildIntervals(40, chars, rawData)
+     var data = _.flatten(data_ints.map(function(d) {
+         return [{"char":d.char, "page":d.page[0]}, {"char":d.char, "page":d.page[1]}];
+     }));         
+         
+     var paths = completePaths(data);
+     console.log(paths)
+     
+     state.x = d3.scale.linear()
+               .domain(d3.extent(data, function(d) {return d.page;}))
+               .range([0,width]);
+     
+     state.y = d3.scale.linear()
+               .domain([0, chars.length + 1])
+               .range([height, 0]);
+     
+     makeAxies(svg, state.x, state.y, "group");
+     
+     state.update(paths, chars);
  });
- d3.select(".trim").select("input").on("change", function() {
-     state.trim = this.checked; 
-     drawLines(state);
- });
- drawLines(state);
 /*
- d3.json("/data/blackar.txt",function (data) {
      chars = _.unique(_.flatten(data));
      console.log(buildIntervals(40, chars, data));
  });
 */
- function drawLines(state) {
+
+ function drawLines(state, paths, chars) {
+     var color = d3.scale.category10()
+                   .domain(chars);
+     var x = state.x, y = state.y;
      var c = state.center ? -1 : 0;
      var pths = paths;
      if (state.trim) {
@@ -225,7 +205,9 @@ body {
          pths = trimmedPaths;
      }
 
-     ypos = function(d) {return y(groupNumber(d.char, d.page, c)) - 5 * chars.indexOf(d.char); }
+     ypos = function(d) {
+         return y(groupNumber(d.char, d.page, paths, chars, c)) - 5 * chars.indexOf(d.char); 
+     }
      var line = d3.svg.line()
                   .x(function(d) { return x(d.page); })
                   .y(ypos)
@@ -252,6 +234,8 @@ body {
 
      });
   }
+
+
 
 </script>
 
