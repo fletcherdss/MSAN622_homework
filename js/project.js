@@ -57,13 +57,13 @@
          d.forEach(function(character) {
              charLast[character] = 0;
              if (!charStart[character])
-                 charStart[character] = i;
+                 charStart[character] = Math.floor(i / pageSize);
          });
          chars.forEach(function(character) {
              charLast[character]++;
              if (charStart[character] && charLast[character] > pageSize) {
                  newData.push({'char':character, 
-                               'page':[charStart[character], i]})
+                               'page':[charStart[character], Math.ceil(i / pageSize)]})
                  charStart[character] = undefined;
                  charLast[character] = 0;
              }

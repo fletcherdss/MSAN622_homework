@@ -103,9 +103,9 @@ body {
 <label class ="center"><input type="checkbox"> Center Groups</label>
 <label class ="trim"><input type="checkbox"> Trim Paths</label> 
 <script>
- var margin = {top: 20, right: 20, bottom: 40, left: 80},
-     width = 1400 - margin.left - margin.right,
-     height = 800 - margin.top - margin.bottom;
+ var margin = {top: 20, right: 20, bottom: 40, left: 150},
+     width = 1300 - margin.left - margin.right,
+     height = 700 - margin.top - margin.bottom;
 
  function makeAxies(svg, x, y, ytext){
      
@@ -167,10 +167,11 @@ body {
 //     var chars = _.unique(data_i.map(function (d) {return d.char;}));
 
      chars = chars.filter(function(x, i) {return i < 3;});
-     data_ints = buildIntervals(40, chars, rawData);
+     data_ints = buildIntervals(30, chars, rawData);
      var data = _.flatten(data_ints.map(function(d) {
          return [{"char":d.char, "page":d.page[0]}, {"char":d.char, "page":d.page[1]}];
      }));         
+     console.log(data_ints)
          
      var paths = completePaths(data);
      console.log(paths)
@@ -214,10 +215,10 @@ body {
                   .interpolate("monotone");
      
      chars.forEach(function(char) {
-         lines = svg.select("." + char).datum(pths[char]);
+         lines = svg.select("." + char.replace(/\s/g, '_')).datum(pths[char]);
          lines.remove();
 
-         l = svg.append("g").attr("class", char).datum(pths[char]);
+         l = svg.append("g").attr("class", char.replace(/\s/g, '_')).datum(pths[char]);
          l.append("path")
           .attr("class", "line")
           .attr("d", line)
