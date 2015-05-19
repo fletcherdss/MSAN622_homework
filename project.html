@@ -167,14 +167,13 @@ body {
 //     var chars = _.unique(data_i.map(function (d) {return d.char;}));
 
      chars = chars.filter(function(x, i) {return i < 3;});
-     data_ints = buildIntervals(30, chars, rawData);
+     data_ints = buildIntervals(10, chars, rawData);
+     //console.log(data_ints);
      var data = _.flatten(data_ints.map(function(d) {
          return [{"char":d.char, "page":d.page[0]}, {"char":d.char, "page":d.page[1]}];
      }));         
-     console.log(data_ints)
          
      var paths = completePaths(data);
-     console.log(paths)
      
      state.x = d3.scale.linear()
                .domain(d3.extent(data, function(d) {return d.page;}))

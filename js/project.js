@@ -57,19 +57,56 @@
          d.forEach(function(character) {
              charLast[character] = 0;
              if (!charStart[character])
-                 charStart[character] = Math.floor(i / pageSize);
+                 charStart[character] = i;
          });
          chars.forEach(function(character) {
              charLast[character]++;
              if (charStart[character] && charLast[character] > pageSize) {
                  newData.push({'char':character, 
-                               'page':[charStart[character], Math.ceil(i / pageSize)]})
+                               'page':[Math.floor(charStart[character] / pageSize),
+                                       Math.ceil(i / pageSize)]
+                               //'page':[charStart[character], i]
+                              });
                  charStart[character] = undefined;
                  charLast[character] = 0;
              }
          });
      })
-     return newData;
+     return reduce_intervals(newData);
+ }
+
+ function reduce_intervals(data_ints) {
+     gp = _.groupBy(data_ints, function (d) {return d.char;});
+     keys = _.keys(gp);
+     reduced_data = keys.map(function(k) {
+         ints_k = gp[k].map(function(i) {return i.page});
+         merged_ints_k = merge_intervals(ints_k);
+         return merged_ints_k.map(function(i) {return {"char":k, "page":i};});
+     });
+     return _.flatten(reduced_data);
+ }
+
+ //TODO: will not work for large values. Also untested.
+ function merge_intervals(intervals) {
+     if (intervals.length == 0)
+         return [];
+
+    new_intervals = []
+    rs = intervals.sort(function(a, b) {
+        return (a[0] - b[0])*100000 + (a[1] - b[1]);});
+    var a0 = rs[0][1]; var b0 = rs[0][1];
+    var a; var b;
+    rs.forEach(function (interval) {
+        a = interval[0]; b = interval[1];
+        if (a - b0 <= 1)
+            b0 = b;
+        else {
+            new_intervals.push([a0, b0])
+            a0 = a; b0 = b;
+        }
+    });
+    new_intervals.push([a,b]);
+    return new_intervals;
  }
 
 /*
