@@ -103,9 +103,19 @@ body {
 <label class ="center"><input type="checkbox"> Center Groups</label>
 <label class ="trim"><input type="checkbox"> Trim Paths</label> 
 <script>
+ var data_ints = [
+     {"char":"green", "page":[1, 20]},
+     {"char":"red", "page":[20, 60]},
+     {"char":"brown", "page":[40, 120]},
+     {"char":"green", "page":[100, 160]},
+     {"char":"pink", "page":[140, 160]},
+ ]
+
  var margin = {top: 20, right: 20, bottom: 40, left: 150},
      width = 1300 - margin.left - margin.right,
-     height = 700 - margin.top - margin.bottom;
+     height = 900 - margin.top - margin.bottom,
+     heightFlow = 500, 
+     heightBar = height - heightFlow, widthBar = 500;
 
  function makeAxies(svg, x, y, ytext){
      
@@ -114,7 +124,7 @@ body {
      var yAxis = d3.svg.axis().scale(y).orient("left").tickSize(6, 0, 0);
      
      var xax = svg.append("g").attr("class", "x axis")
-                  .attr("transform", "translate(0," + height + ")")
+                  .attr("transform", "translate(0," + heightFlow + ")")
 	              .call(xAxis.ticks(15));
      
      xax.append("text")
@@ -125,12 +135,6 @@ body {
 	    .text("page");
  };
 
-</script>
-
-
-<script>
- numPages = 180
-
  var svg = d3.select("body").append("svg")
 	          .attr("width", width + margin.left + margin.right)
 	          .attr("height", height + margin.top + margin.bottom)
@@ -140,35 +144,30 @@ body {
 
  //An object for keeping track of the interative features and handling updates
  var state = {trim:false, center:false}
- state.update = function (paths, chars) {
+ state.update = function (paths) {
      st = this
-     drawLines(st, paths,chars);
+     chars = st.chars
+     drawLines(st, paths);
      d3.select(".center").select("input").on("change", function() {
          state.center = this.checked;
-         drawLines(st, paths, chars);
+         drawLines(st, paths);
      });
      d3.select(".trim").select("input").on("change", function() {
          state.trim = this.checked; 
-         drawLines(st, paths, chars);
+         drawLines(st, paths);
      });
  }
 
- var data_ints = [
-     {"char":"green", "page":[1, 20]},
-     {"char":"red", "page":[20, 60]},
-     {"char":"brown", "page":[40, 120]},
-     {"char":"green", "page":[100, 160]},
-     {"char":"pink", "page":[140, 160]},
- ]
-
  d3.json("data/blackar.txt", function (rawData) {
-     var chars = _.unique(_.flatten(rawData));
-//     var data_i = data_ints;
-//     var chars = _.unique(data_i.map(function (d) {return d.char;}));
+     var bins = _.countBy(_.flatten(rawData), _.identity);
+     state.bins = bins;
+     state.chars = _.map(bins, function(count, character) {return [count, character];})
+         .sort(function (a, b) {return b[0] - a[0];}).map(function (d) {return d[1];});
+     state.chars = state.chars.filter(function(x, i) {return i < 6;});
+     var chars = state.chars;
+     console.log(bins);
 
-     chars = chars.filter(function(x, i) {return i < 6;});
      data_ints = buildIntervals(10, chars, rawData);
-     //console.log(data_ints);
      var data = _.flatten(data_ints.map(function(d) {
          return [{"char":d.char, "page":d.page[0]}, {"char":d.char, "page":d.page[1]}];
      }));         
@@ -181,22 +180,45 @@ body {
      
      state.y = d3.scale.linear()
                .domain([0, chars.length + 1])
-               .range([height, 0]);
+               .range([heightFlow, 0]);
      
+     state.color = d3.scale.category10()
+                   .domain(chars);
+
+     console.log(state.chars);
+     state.xb = d3.scale.ordinal()
+                  .domain(state.chars)
+                  .rangeRoundBands([0, widthBar])
+     state.yb = d3.scale.linear()
+                  .domain([0, d3.max(_.values(bins))])
+                  .range([height, heightFlow + 40])
+
      makeAxies(svg, state.x, state.y, "group");
      
-     state.update(paths, chars);
+     state.update(paths);
+     drawBars(state, bins);
  });
-/*
-     chars = _.unique(_.flatten(data));
-     console.log(buildIntervals(40, chars, data));
- });
-*/
 
- function drawLines(state, paths, chars) {
-     var color = d3.scale.category10()
-                   .domain(chars);
-     var x = state.x, y = state.y;
+ function drawBars(state, bins) {
+     var bars = svg.append('g').attr("class", "bars");
+     state.chars.forEach(function(character) {
+         var r = bars.append('rect').datum(bins[character]);
+         r.attr('y', function (d) {return state.yb(d);})
+		  .attr('x', state.xb(character))
+          .attr('height',function (d) {return height - state.yb(d);})
+          .attr('width', widthBar / state.chars.length - 10)
+          .attr('fill', state.color(character));
+     });
+ } 
+
+ function drawCumulative(state, cumulative) {
+
+     });
+ } 
+
+ function drawLines(state, paths) {
+     var chars = state.chars;
+     var x = state.x, y = state.y, color = state.color;
      var c = state.center ? -1 : 0;
      var pths = paths;
      if (state.trim) {
@@ -234,6 +256,7 @@ body {
 
      });
   }
+
 
 
 
