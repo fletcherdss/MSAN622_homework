@@ -166,7 +166,7 @@ body {
 //     var data_i = data_ints;
 //     var chars = _.unique(data_i.map(function (d) {return d.char;}));
 
-     chars = chars.filter(function(x, i) {return i < 3;});
+     chars = chars.filter(function(x, i) {return i < 6;});
      data_ints = buildIntervals(10, chars, rawData);
      //console.log(data_ints);
      var data = _.flatten(data_ints.map(function(d) {
