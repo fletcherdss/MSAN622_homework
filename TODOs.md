@@ -4,10 +4,12 @@
 - ~~Charge the data format so it is not order dependant.~~
 - ~~Parse a book into real data ~~
 - ~~add bar chart of character mentions~~
-- add cumulative character mentions by page
+- ~~add cumulative character mentions by page~~
 - ~~end line when character is no longer mentioned~~
 - ~~merge overlaping intervals or have some other way to handle the issues they cause~~
 - resolve issue with some intervals being lost if the have size is set too high.
+- Label all axies
+- Do necessary cleanup/refactor for next features.
 
 #Medium Priority:
 - Eliminate group gaps

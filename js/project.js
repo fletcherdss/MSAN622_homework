@@ -109,6 +109,7 @@
     return new_intervals;
  }
 
+ 
 /*
 dataTest = [[], [], [], ['r', 'b', 'g'], ['r', 'b'], ['r'], ['r','g'], ['r'], [], [], []]
 console.log(buildIntervals(2, ['r','g', 'b'], dataTest));
@@ -142,3 +143,28 @@ d3.json("/data/blackar.txt",function (data) {
  }
 
  function transpose(a) { return _.zip.apply(_, a);} 
+
+ function cumulativeSum(chars, rawData, page_size) {
+     var lines = rawData.length;
+     csum = [];
+     csum.push(_.object(chars, chars.map(function (d) {return 0;}))) ;
+     page = 0;
+     rawData.forEach(function(d, i) {
+         if (i % page_size == 0){
+             page++;
+             csum[page] = {}
+             chars.forEach(function(character){
+                 csum[page][character] = csum[page-1][character];
+             });
+         }
+         d.forEach(function(character) {
+             csum[page][character] = csum[page][character] + 1;
+         });        
+     });
+     melted = csum.map(function (d, i) {
+         return _.pairs(d).filter(function (p) {return p[1] >= 0;})
+                 .map(function (p) {return {"page":i, "name":p[0], "count":p[1]};});
+     });
+     return _.groupBy(_.flatten(melted), function(d){return d.name;});
+         
+ }
