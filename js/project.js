@@ -7,7 +7,6 @@ function completePaths(data) {
      filledPaths = {};
      charGroups = _.groupBy(data, function(d) {return d.char;})
      _(charGroups).forEach(function(charData, character) {
-         console.log(character, charData);
          var filledPath = []; 
          var i = 0;
          sigPages.forEach(function(page, j) {
@@ -19,9 +18,6 @@ function completePaths(data) {
              }
              else if (charData[i].page > page)
                  p = !charData[i].present;
-             else
-                 console.log(i, page)
-
              filledPath.push({"char":character, "page":page, "present":p});
          });
          filledPaths[character] = filledPath;
@@ -42,63 +38,60 @@ function intersperse(ar) {
 
 
 
- function trimPath(path) {
-     path2 = path.slice()
-     while (path2.length > 0 && !path2.slice(-1)[0].present){
-         path2.pop()
-     }
-     return path2;
- }
+function trimPath(path) {
+    path2 = path.slice()
+    while (path2.length > 0 && !path2.slice(-1)[0].present){
+        path2.pop()
+    }
+    return path2;
+}
 
- var d = []
- var data_ints = [
-     {"char":"green", "page":[1, 20]},
-     {"char":"red", "page":[20, 60]},
-     {"char":"brown", "page":[40, 120]},
-     {"char":"green", "page":[100, 160]},
-     {"char":"pink", "page":[140, 160]},
- ]
+var d = []
+var data_ints = [
+    {"char":"green", "page":[1, 20]},
+    {"char":"red", "page":[20, 60]},
+    {"char":"brown", "page":[40, 120]},
+    {"char":"green", "page":[100, 160]},
+    {"char":"pink", "page":[140, 160]},
+]
 
- function buildIntervals(pageSize, chars, data) {
-     charStart = {}; //The first line they were mentioned
-     charLast = {}; //How many lines since they were mentioned
-     chars.forEach(function (character) {charLast[character] = 0;});
-     newData = [];
-     data.forEach(function(d, i) {
-         d.forEach(function(character) {
-             charLast[character] = 0;
-             if (!charStart[character])
-                 charStart[character] = i;
-         });
-         chars.forEach(function(character) {
-             charLast[character]++;
-             if (charStart[character] && charLast[character] > pageSize) {
-                 newData.push({'char':character, 
-                               'page':[Math.floor(charStart[character] / pageSize),
-                                       Math.ceil(i / pageSize)]
-                               //'page':[charStart[character], i]
-                              });
-                 charStart[character] = undefined;
-                 charLast[character] = 0;
-             }
-         });
-     })
-     return reduce_intervals(newData);
- }
+function buildIntervals(pageSize, chars, data) {
+    charStart = {}; //The first line they were mentioned
+    charLast = {}; //How many lines since they were mentioned
+    chars.forEach(function (character) {charLast[character] = 0;});
+    newData = [];
+    data.forEach(function(d, i) {
+        d.forEach(function(character) {
+            charLast[character] = 0;
+            if (!charStart[character])
+                charStart[character] = i;
+        });
+        chars.forEach(function(character) {
+            charLast[character]++;
+            if (charStart[character] && charLast[character] > pageSize) {
+                newData.push({'char':character, 
+                              'page':[Math.floor(charStart[character] / pageSize),
+                                      Math.ceil(i / pageSize)]
+                              //'page':[charStart[character], i]
+                             });
+                charStart[character] = undefined;
+                charLast[character] = 0;
+            }
+        });
+    })
+    return reduce_intervals(newData);
+}
 
- function reduce_intervals(data_ints) {
-     gp = _.groupBy(data_ints, function (d) {return d.char;});
-     console.log(gp)
-     keys = _.keys(gp);
-     reduced_data = keys.map(function(k) {
-         ints_k = gp[k].map(function(i) {return i.page});
-         console.log(k, ints_k);
-         merged_ints_k = merge_intervals(ints_k);
-         console.log(k, merged_ints_k);
-         return merged_ints_k.map(function(i) {return {"char":k, "page":i};});
-     });
-     return _.flatten(reduced_data);
- }
+function reduce_intervals(data_ints) {
+    gp = _.groupBy(data_ints, function (d) {return d.char;});
+    keys = _.keys(gp);
+    reduced_data = keys.map(function(k) {
+        ints_k = gp[k].map(function(i) {return i.page});
+        merged_ints_k = merge_intervals(ints_k);
+        return merged_ints_k.map(function(i) {return {"char":k, "page":i};});
+    });
+    return _.flatten(reduced_data);
+}
 
  //TODO: will not work for large values. Also untested.
 function merge_intervals(intervals) {
@@ -108,7 +101,6 @@ function merge_intervals(intervals) {
     new_intervals = []
     rs = intervals.sort(function(a, b) {
         return (a[0] - b[0])*100000 + (a[1] - b[1]);});
-    console.log(rs);
     var a0 = rs[0][0]; var b0 = rs[0][1];
     var a; var b;
     rs.forEach(function (interval) {

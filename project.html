@@ -47,6 +47,12 @@ body {
   right: -1241px;
 }
 
+.verticalBar {
+  position: relative;
+  top: 150px;
+  right: -1148px;
+}
+
 </style>
 
 <body>
@@ -102,14 +108,8 @@ body {
 
 <label class ="center"><input type="checkbox"> Center Groups</label>
 <label class ="trim"><input type="checkbox"> Trim Paths</label> 
+<label class ="verticalBar"><input type="checkbox"> Vertical Bars</label> 
 <script>
- var data_ints = [
-     {"char":"green", "page":[1, 20]},
-     {"char":"red", "page":[20, 60]},
-     {"char":"brown", "page":[40, 120]},
-     {"char":"green", "page":[100, 160]},
-     {"char":"pink", "page":[140, 160]},
- ]
 
  var margin = {top: 20, right: 20, bottom: 40, left: 150},
      width = 1300 - margin.left - margin.right,
@@ -155,6 +155,11 @@ body {
          state.trim = this.checked; 
          drawLines(st, paths);
      });
+     d3.select(".verticalBar").select("input").on("change", function() {
+         state.verticalBar = this.checked; 
+         state.yhb.domain(state.chars)
+         drawBars(state, state.bins);
+     });
  }
 
  d3.json("data/blackar.txt", function (rawData) {
@@ -162,20 +167,16 @@ body {
      state.bins = bins;
      state.chars = _.map(bins, function(count, character) {return [count, character];})
          .sort(function (a, b) {return b[0] - a[0];}).map(function (d) {return d[1];});
-     state.chars = state.chars.filter(function(x, i) {return i < 6;});
+     state.chars = state.chars.filter(function(x, i) {return i < 9;});
      var chars = state.chars;
      cumulativeData = cumulativeSum(chars, rawData, state.pageSize);
 
      data_ints = buildIntervals(state.pageSize, chars, rawData);
-//     console.log(_.groupBy(data_ints, function(d) {return d.char;}))
      var data = _.flatten(data_ints.map(function(d) {
          return [{"char":d.char, "page":d.page[0], "present":true}, 
                  {"char":d.char, "page":d.page[1], "present":false}];
      }));         
- //    console.log(data_ints);
-//     console.log(data);    
      var paths = completePaths(data);
-//     console.log(paths)
      
      state.x = d3.scale.linear()
                .domain(d3.extent(data, function(d) {return d.page;}))
@@ -193,15 +194,30 @@ body {
                   .domain([0, d3.max(_.values(bins))])
                   .range([height, heightFlow + 40]);
 
+     state.yhb = d3.scale.ordinal().domain(state.chars)
+                   .rangeRoundBands([height, height - heightBar + 40]);
+     state.xhb = d3.scale.linear()
+                  .domain([0, d3.max(_.values(bins))])
+                  .range([0, widthBar]);
+
+
      state.xc = d3.scale.linear().domain(state.x.domain()).range([widthBar, width]);
      state.yc = d3.scale.linear().domain([0, 1]).range([height, heightFlow + 40]);
      
      state.update(paths);
-     drawBars(state, bins);
+     drawHBars(state, bins);
      drawCumulative(state, cumulativeData)
  });
 
  function drawBars(state, bins) {
+     d3.select(".bars").remove();
+     if (state.verticalBar)
+         drawVBars(state, bins)
+     else
+         drawHBars(state, bins)
+ }
+
+ function drawVBars(state, bins) {
      var bars = svg.append('g').attr("class", "bars");
      state.chars.forEach(function(character) {
          var r = bars.append('rect').datum(bins[character]);
@@ -212,6 +228,28 @@ body {
           .attr('fill', state.color(character));
      });
  } 
+
+ function drawHBars(state, bins) {
+     var bars = svg.append('g').attr("class", "bars");
+     var barsize = heightBar / state.chars.length
+     state.chars.forEach(function(character) {
+         var r = bars.append('rect').datum(bins[character]);
+         r.attr('y', state.yhb(character))
+		  .attr('x', 0)
+          .attr('width',function (d) {return state.xhb(d);})
+          .attr('height', barsize - 10)
+          .attr('fill', state.color(character));
+         bars.append("text")
+	      .attr("y", state.yhb(character) + barsize/2 )
+	      .attr("x", -35)
+	      .attr("dx", "0.71em")
+	      .style("text-anchor", "end")
+          .attr("fill", state.color(character))
+	      .text(character);
+
+     });
+ } 
+
 
  function drawCumulative(state, cumulative) {
      var line = d3.svg.line()
@@ -256,8 +294,9 @@ body {
      
      chars.forEach(function(char) {
          svg.select("." + char.replace(/\s/g, '_')).remove();
-
-         l = svg.append("g").attr("class", char.replace(/\s/g, '_')).datum(pths[char]);
+         path = [{'char':char, page:0, present:false}].concat(pths[char]);
+         l = svg.append("g").attr("class", char.replace(/\s/g, '_'))
+                .datum(path);
          l.append("path")
           .attr("class", "line")
           .attr("d", line)
@@ -265,8 +304,8 @@ body {
 //          .style("stroke-dasharray", function(d) { return  d.present ? none : [3,3]; });
 
          l.append("text")
-	      .attr("y", ypos(pths[char][0]) + 3)
-	      .attr("x", -20)
+	      .attr("y", ypos(path[0]) + 3)
+	      .attr("x", -35)
 	      .attr("dx", "0.71em")
 	      .style("text-anchor", "end")
           .attr("fill", color(char))
