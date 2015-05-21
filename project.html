@@ -118,18 +118,17 @@ body {
      heightBar = height - heightFlow, widthBar = 500;
 
  function makeAxies(svg, x, y, ytext){
-     
      var xAxis = d3.svg.axis().scale(x).orient("bottom").tickSize(6, 0 , 0);
      xAxis.tickFormat(d3.format("d"));
      var yAxis = d3.svg.axis().scale(y).orient("left").tickSize(6, 0, 0);
      
      var xax = svg.append("g").attr("class", "x axis")
-                  .attr("transform", "translate(0," + heightFlow + ")")
+                  .attr("transform", "translate(0," + y.range()[0] + ")")
 	              .call(xAxis.ticks(15));
      
      xax.append("text")
 	    .attr("y", 36)
-	    .attr("x", width / 2 - 50)
+	    .attr("x", (x.range()[1] + x.range()[0]) / 2 - 50)
 	    .attr("dx", "0.71em")
 	    .style("text-anchor", "end", " grid")
 	    .text("page");
@@ -159,23 +158,24 @@ body {
  }
 
  d3.json("data/blackar.txt", function (rawData) {
-
      var bins = _.countBy(_.flatten(rawData), _.identity);
      state.bins = bins;
      state.chars = _.map(bins, function(count, character) {return [count, character];})
          .sort(function (a, b) {return b[0] - a[0];}).map(function (d) {return d[1];});
      state.chars = state.chars.filter(function(x, i) {return i < 6;});
      var chars = state.chars;
-     console.log(bins);
      cumulativeData = cumulativeSum(chars, rawData, state.pageSize);
-     console.log(cumulativeData);
 
      data_ints = buildIntervals(state.pageSize, chars, rawData);
+     console.log(_.groupBy(data_ints, function(d) {return d.char;}))
      var data = _.flatten(data_ints.map(function(d) {
-         return [{"char":d.char, "page":d.page[0]}, {"char":d.char, "page":d.page[1]}];
+         return [{"char":d.char, "page":d.page[0], "present":true}, 
+                 {"char":d.char, "page":d.page[1], "present":false}];
      }));         
-         
+//     console.log(data_ints);
+//     console.log(data);    
      var paths = completePaths(data);
+//     console.log(paths)
      
      state.x = d3.scale.linear()
                .domain(d3.extent(data, function(d) {return d.page;}))
@@ -188,20 +188,13 @@ body {
      state.color = d3.scale.category10()
                    .domain(chars);
 
-     state.xb = d3.scale.ordinal()
-                  .domain(state.chars)
-                  .rangeRoundBands([0, widthBar])
+     state.xb = d3.scale.ordinal().domain(state.chars).rangeRoundBands([0, widthBar]);
      state.yb = d3.scale.linear()
                   .domain([0, d3.max(_.values(bins))])
-                  .range([height, heightFlow + 40])
-
-     state.xc = d3.scale.linear()
-                  .domain([0, d3.max(data, function(d) {return d.page})])
-                  .range([widthBar, width]);
-     state.yc = d3.scale.linear()
-                  .domain([0, 1])
                   .range([height, heightFlow + 40]);
 
+     state.xc = d3.scale.linear().domain(state.x.domain()).range([widthBar, width]);
+     state.yc = d3.scale.linear().domain([0, 1]).range([height, heightFlow + 40]);
      
      state.update(paths);
      drawBars(state, bins);
@@ -227,13 +220,14 @@ body {
                   .interpolate("monotone");
 
      state.chars.forEach(function(character) {
-         console.log(line(cumulative[character]));
          var cLines = svg.append('g').attr("class", "cumulative").datum(cumulative[character]);
          cLines.append("path")
           .attr("class", "line")
           .attr("d", line)
           .style("stroke", function(d) { return state.color(character); });
      });
+
+     makeAxies(svg, state.xc, state.yc, "group");
  };
   
 

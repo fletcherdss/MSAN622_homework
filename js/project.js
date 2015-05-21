@@ -1,9 +1,9 @@
 
 
- function completePaths(data) {
+ function completePathsOld(data) {
      var sigPages = _.unique(data.map(function (d) {return d.page;}))
          .sort(function (a, b) {return a - b;});
-
+//     console.log(sigPages);
      filledPaths = {};
      var chars = _.unique(data.map(function (d) {return d.char;}))
      chars.forEach(function(character) {
@@ -30,6 +30,47 @@
      });
      return filledPaths;
  };
+
+function completePaths(data) {
+     var sigPages = _.unique(data.map(function (d) {return d.page;}))
+         .sort(function (a, b) {return a - b;});
+//     sigPages = intersperse(sigPages);
+     filledPaths = {};
+     charGroups = _.groupBy(data, function(d) {return d.char;})
+     _(charGroups).forEach(function(charData, character) {
+         console.log(character, charData);
+         var filledPath = []; 
+         var i = 0;
+         console.log(_.difference(charData.map(function (d) {return d.page;}), sigPages));
+         sigPages.forEach(function(page, j) {
+             if (i >= charData.length)
+                 p = false;
+             else if (charData[i].page == page){
+                 p = true;  
+                     i++;
+             }
+             else if (charData[i].page > page)
+                 p = !charData[i].present;
+                 
+             filledPath.push({"char":character, "page":page, "present":p});
+         });
+         filledPaths[character] = filledPath;
+     });
+     return filledPaths;
+}
+
+
+function intersperse(ar) {
+    i = 0;
+    ar2 = [];
+    for (var i = 1; i < ar.length; i++){
+        ar2.push(ar[i-1], (ar[i-1] + ar[i])/2);
+    }
+    ar2.push(_.last(ar))
+    return ar2;
+}
+
+
 
  function trimPath(path) {
      path2 = path.slice()
@@ -61,10 +102,12 @@
          });
          chars.forEach(function(character) {
              charLast[character]++;
+             if (Math.floor(charStart[character] / pageSize) >= Math.ceil((i + 1) / pageSize))
+                 console.log(charStart, i);
              if (charStart[character] && charLast[character] > pageSize) {
                  newData.push({'char':character, 
                                'page':[Math.floor(charStart[character] / pageSize),
-                                       Math.ceil(i / pageSize)]
+                                       Math.ceil((i + 1) / pageSize)]
                                //'page':[charStart[character], i]
                               });
                  charStart[character] = undefined;
@@ -94,7 +137,7 @@
     new_intervals = []
     rs = intervals.sort(function(a, b) {
         return (a[0] - b[0])*100000 + (a[1] - b[1]);});
-    var a0 = rs[0][1]; var b0 = rs[0][1];
+    var a0 = rs[0][0]; var b0 = rs[0][1];
     var a; var b;
     rs.forEach(function (interval) {
         a = interval[0]; b = interval[1];
