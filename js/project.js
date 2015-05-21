@@ -191,3 +191,19 @@ d3.json("/data/blackar.txt",function (data) {
          .sort(function (a, b) {return b[0] - a[0];}).map(function (d) {return d[1];});
      return ordered.filter(function(x, i) {return i < 9;});
  }
+
+ function flattenPaths(chars, paths){
+     flatpath = chars.map(function(character) {return paths[character];})
+         .reduce(function(memo, path) {
+             path.forEach(function(d) {
+                 if (d.present) {
+                     if (memo[d.page])
+                         memo[d.page].push(d.char);
+                     else
+                         memo[d.page] = [d.char];
+                 }
+             });
+             return memo;
+         } , {});
+     return flatpath;
+ }

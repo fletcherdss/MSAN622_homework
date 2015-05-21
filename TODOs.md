@@ -12,7 +12,7 @@
 - ~~Do necessary cleanup/refactor for next features.~~
 
 #Medium Priority:
-- Eliminate group gaps
+- ~~ Eliminate group gaps ~~
 - Clicking on a group will subset so only those characters are shown
 - Add some form of adjustment to prevent misleading overlap.
 - Have checkboxes to choose characters.

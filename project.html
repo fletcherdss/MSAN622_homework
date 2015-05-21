@@ -294,19 +294,22 @@ body {
  };
   
 
- function drawLines(state, paths) {
+ function drawLines(state) {
      var chars = state.chars;
      var x = state.x, y = state.y, color = state.color;
      var c = state.center ? -1 : 0;
-     var pths = paths;
+     var pths = state.paths;
+     var flatpath = flattenPaths(chars, pths);
+
      if (state.trim) {
          var trimmedPaths = {}
          chars.forEach(function(c) {trimmedPaths[c] = trimPath(paths[c]);})
          pths = trimmedPaths;
      }
-
+     
      ypos = function(d) {
-         return y(groupNumber(d.char, d.page, paths, chars, c)) - 5 * chars.indexOf(d.char); 
+         return y(groupNumber(d.char, d.page, pths, chars, c)) -
+         5 * _(flatpath[d.page]).indexOf(d.char); 
      }
 
      var line = d3.svg.line()
