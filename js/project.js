@@ -1,5 +1,14 @@
 
 
+function builtCompletePaths(pageSize, chars, rawData) {
+     data_ints = buildIntervals(pageSize, chars, rawData);
+     var data = _.flatten(data_ints.map(function(d) {
+         return [{"char":d.char, "page":d.page[0], "present":true}, 
+                 {"char":d.char, "page":d.page[1], "present":false}];
+     }));         
+     return  completePaths(data);
+}
+
 function completePaths(data) {
      var sigPages = _.unique(data.map(function (d) {return d.page;}))
          .sort(function (a, b) {return a - b;});
@@ -175,4 +184,10 @@ d3.json("/data/blackar.txt",function (data) {
      });
      return _.groupBy(_.flatten(melted), function(d){return d.name;});
          
+ }
+
+ function getKLargestKeys(bins) {
+     ordered = _.map(bins, function(count, character) {return [count, character];})
+         .sort(function (a, b) {return b[0] - a[0];}).map(function (d) {return d[1];});
+     return ordered.filter(function(x, i) {return i < 9;});
  }

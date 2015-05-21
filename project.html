@@ -6,8 +6,11 @@
     <script type="text/javascript" src="js/d3.min.js"></script>
     <script type="text/javascript" src="js/underscore-min.js"></script>
     <script type="text/javascript" src="js/project.js"></script>
+    <script type="text/javascript" src="d3.slider/d3.slider.js"></script>
 </head>
 
+
+<link rel="stylesheet" href="d3.slider/d3.slider.css" />  
 <style>
 
 body {
@@ -52,6 +55,15 @@ body {
   top: 150px;
   right: -1148px;
 }
+
+ #slider4 {
+     height: 150px;
+     position: relative;
+     top: 160px;
+     right: -1380px;
+ }
+
+
 
 </style>
 
@@ -103,13 +115,17 @@ body {
 		</ul>
         </div><!--/.nav-collapse -->
     </div>
-</nav>
+</nav> 
 
 
 <label class ="center"><input type="checkbox"> Center Groups</label>
 <label class ="trim"><input type="checkbox"> Trim Paths</label> 
 <label class ="verticalBar"><input type="checkbox"> Vertical Bars</label> 
+<div id="slider4"></div>
+
+
 <script>
+
 
  var margin = {top: 20, right: 20, bottom: 40, left: 150},
      width = 1300 - margin.left - margin.right,
@@ -142,71 +158,78 @@ body {
                     "translate(" + (margin.left) + "," + (margin.top) + ")");
 
  //An object for keeping track of the interative features and handling updates
- var state = {trim:false, center:false, pageSize:50}
+ var state = {trim:false, center:false, pageSize:40}
+
+ state.setScales = function () {
+     st = this;
+     st.x = d3.scale.linear()
+               .domain(d3.extent(st.paths[st.chars[0]], function(d) {return d.page;}))
+               .range([0,width]);
+     console.log(st.x.domain());
+     
+     st.y = d3.scale.linear()
+               .domain([0, st.chars.length + 1])
+               .range([heightFlow, 0]);
+     
+     st.color = d3.scale.category10()
+                   .domain(st.chars);
+
+     st.xb = d3.scale.ordinal().domain(st.chars).rangeRoundBands([0, widthBar]);
+     st.yb = d3.scale.linear()
+                  .domain([0, d3.max(_.values(st.bins))])
+                  .range([height, heightFlow + 40]);
+
+     st.yhb = d3.scale.ordinal().domain(st.chars)
+                   .rangeRoundBands([height, height - heightBar + 40]);
+     st.xhb = d3.scale.linear()
+                  .domain([0, d3.max(_.values(st.bins))])
+                  .range([0, widthBar]);
+
+     st.xc = d3.scale.linear().domain(st.x.domain()).range([widthBar, width]);
+     st.yc = d3.scale.linear().domain([0, 1]).range([height, heightFlow + 40]);
+ }
+
  state.update = function (paths) {
      st = this
      chars = st.chars
-     drawLines(st, paths);
+     drawLines(st, st.paths);
      d3.select(".center").select("input").on("change", function() {
          state.center = this.checked;
-         drawLines(st, paths);
+         drawLines(st, st.paths);
      });
      d3.select(".trim").select("input").on("change", function() {
          state.trim = this.checked; 
-         drawLines(st, paths);
+         drawLines(st, st.paths);
      });
      d3.select(".verticalBar").select("input").on("change", function() {
          state.verticalBar = this.checked; 
          state.yhb.domain(state.chars)
          drawBars(state, state.bins);
      });
+     d3.select('#slider4').call(
+         d3.slider().value(state.pageSize).min(8).max(60)
+           .orientation("vertical").on("slide", function(evt, value) {
+               st.pageSize = Math.floor(value);
+               st.paths = builtCompletePaths(st.pageSize, st.chars, st.rawData);
+               st.cumulativeData = cumulativeSum(st.chars, st.rawData, st.pageSize);
+               st.setScales();
+               drawLines(st, st.paths);
+               drawCumulative(st);
+         }));
  }
 
  d3.json("data/blackar.txt", function (rawData) {
-     var bins = _.countBy(_.flatten(rawData), _.identity);
-     state.bins = bins;
-     state.chars = _.map(bins, function(count, character) {return [count, character];})
-         .sort(function (a, b) {return b[0] - a[0];}).map(function (d) {return d[1];});
-     state.chars = state.chars.filter(function(x, i) {return i < 9;});
-     var chars = state.chars;
-     cumulativeData = cumulativeSum(chars, rawData, state.pageSize);
+     state.rawData = rawData;
+     state.bins = _.countBy(_.flatten(rawData), _.identity);
+     state.chars = getKLargestKeys(state.bins);
+     state.cumulativeData = cumulativeSum(state.chars, rawData, state.pageSize);
+     state.paths = builtCompletePaths(state.pageSize, state.chars, rawData);     
+     var paths = state.paths;
 
-     data_ints = buildIntervals(state.pageSize, chars, rawData);
-     var data = _.flatten(data_ints.map(function(d) {
-         return [{"char":d.char, "page":d.page[0], "present":true}, 
-                 {"char":d.char, "page":d.page[1], "present":false}];
-     }));         
-     var paths = completePaths(data);
-     
-     state.x = d3.scale.linear()
-               .domain(d3.extent(data, function(d) {return d.page;}))
-               .range([0,width]);
-     
-     state.y = d3.scale.linear()
-               .domain([0, chars.length + 1])
-               .range([heightFlow, 0]);
-     
-     state.color = d3.scale.category10()
-                   .domain(chars);
-
-     state.xb = d3.scale.ordinal().domain(state.chars).rangeRoundBands([0, widthBar]);
-     state.yb = d3.scale.linear()
-                  .domain([0, d3.max(_.values(bins))])
-                  .range([height, heightFlow + 40]);
-
-     state.yhb = d3.scale.ordinal().domain(state.chars)
-                   .rangeRoundBands([height, height - heightBar + 40]);
-     state.xhb = d3.scale.linear()
-                  .domain([0, d3.max(_.values(bins))])
-                  .range([0, widthBar]);
-
-
-     state.xc = d3.scale.linear().domain(state.x.domain()).range([widthBar, width]);
-     state.yc = d3.scale.linear().domain([0, 1]).range([height, heightFlow + 40]);
-     
+     state.setScales(paths);
+     drawCumulative(state)
      state.update(paths);
-     drawHBars(state, bins);
-     drawCumulative(state, cumulativeData)
+     drawHBars(state, state.bins);
  });
 
  function drawBars(state, bins) {
@@ -251,11 +274,13 @@ body {
  } 
 
 
- function drawCumulative(state, cumulative) {
+ function drawCumulative(state) {
+     var cumulative = state.cumulativeData;
      var line = d3.svg.line()
                   .x(function(d) {return state.xc(d.page); })
                   .y(function(d) {return state.yc(d.count / state.bins[d.name]); })
                   .interpolate("monotone");
+     svg.select(".cumulative").remove();
      var cLines = svg.append('g').attr("class", "cumulative")
      state.chars.forEach(function(character) {
          cLines = cLines.datum(cumulative[character]);

@@ -8,15 +8,15 @@
 - ~~end line when character is no longer mentioned~~
 - ~~merge overlaping intervals or have some other way to handle the issues they cause~~
 - ~~resolve issue with some intervals being lost if the have size is set too high.~~
-- Label all axies
-- Do necessary cleanup/refactor for next features.
+- ~~Label all axies~~
+- ~~Do necessary cleanup/refactor for next features.~~
 
 #Medium Priority:
 - Eliminate group gaps
 - Clicking on a group will subset so only those characters are shown
 - Add some form of adjustment to prevent misleading overlap.
 - Have checkboxes to choose characters.
-- Have slider to set page size
+- ~~Have slider to set page size ~~
 - Have brush, etc to set page range
 
 #Stretch Goals:
