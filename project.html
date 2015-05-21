@@ -117,12 +117,12 @@ body {
      heightFlow = 500, 
      heightBar = height - heightFlow, widthBar = 500;
 
- function makeAxies(svg, x, y, ytext){
+ function makeAxies(svg, x, y, group){
      var xAxis = d3.svg.axis().scale(x).orient("bottom").tickSize(6, 0 , 0);
      xAxis.tickFormat(d3.format("d"));
      var yAxis = d3.svg.axis().scale(y).orient("left").tickSize(6, 0, 0);
      
-     var xax = svg.append("g").attr("class", "x axis")
+     var xax = svg.append("g").attr("class", group)
                   .attr("transform", "translate(0," + y.range()[0] + ")")
 	              .call(xAxis.ticks(15));
      
@@ -142,7 +142,7 @@ body {
                     "translate(" + (margin.left) + "," + (margin.top) + ")");
 
  //An object for keeping track of the interative features and handling updates
- var state = {trim:false, center:false, pageSize:10}
+ var state = {trim:false, center:false, pageSize:50}
  state.update = function (paths) {
      st = this
      chars = st.chars
@@ -167,12 +167,12 @@ body {
      cumulativeData = cumulativeSum(chars, rawData, state.pageSize);
 
      data_ints = buildIntervals(state.pageSize, chars, rawData);
-     console.log(_.groupBy(data_ints, function(d) {return d.char;}))
+//     console.log(_.groupBy(data_ints, function(d) {return d.char;}))
      var data = _.flatten(data_ints.map(function(d) {
          return [{"char":d.char, "page":d.page[0], "present":true}, 
                  {"char":d.char, "page":d.page[1], "present":false}];
      }));         
-//     console.log(data_ints);
+ //    console.log(data_ints);
 //     console.log(data);    
      var paths = completePaths(data);
 //     console.log(paths)
@@ -218,16 +218,16 @@ body {
                   .x(function(d) {return state.xc(d.page); })
                   .y(function(d) {return state.yc(d.count / state.bins[d.name]); })
                   .interpolate("monotone");
-
+     var cLines = svg.append('g').attr("class", "cumulative")
      state.chars.forEach(function(character) {
-         var cLines = svg.append('g').attr("class", "cumulative").datum(cumulative[character]);
+         cLines = cLines.datum(cumulative[character]);
          cLines.append("path")
           .attr("class", "line")
           .attr("d", line)
           .style("stroke", function(d) { return state.color(character); });
      });
 
-     makeAxies(svg, state.xc, state.yc, "group");
+     makeAxies(cLines, state.xc, state.yc, "group");
  };
   
 
@@ -251,11 +251,11 @@ body {
                   .y(ypos)
                   .interpolate("monotone");
 
-     makeAxies(svg, state.x, state.y, "group");
+     svg.select(".x_axis_lines").remove();
+     makeAxies(svg, state.x, state.y, "x_axis_lines");
      
      chars.forEach(function(char) {
-         lines = svg.select("." + char.replace(/\s/g, '_')).datum(pths[char]);
-         lines.remove();
+         svg.select("." + char.replace(/\s/g, '_')).remove();
 
          l = svg.append("g").attr("class", char.replace(/\s/g, '_')).datum(pths[char]);
          l.append("path")

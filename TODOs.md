@@ -7,7 +7,7 @@
 - ~~add cumulative character mentions by page~~
 - ~~end line when character is no longer mentioned~~
 - ~~merge overlaping intervals or have some other way to handle the issues they cause~~
-- resolve issue with some intervals being lost if the have size is set too high.
+- ~~resolve issue with some intervals being lost if the have size is set too high.~~
 - Label all axies
 - Do necessary cleanup/refactor for next features.
 
@@ -17,6 +17,7 @@
 - Add some form of adjustment to prevent misleading overlap.
 - Have checkboxes to choose characters.
 - Have slider to set page size
+- Have brush, etc to set page range
 
 #Stretch Goals:
 - Dot lines when characters are not present.

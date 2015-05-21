@@ -1,36 +1,5 @@
 
 
- function completePathsOld(data) {
-     var sigPages = _.unique(data.map(function (d) {return d.page;}))
-         .sort(function (a, b) {return a - b;});
-//     console.log(sigPages);
-     filledPaths = {};
-     var chars = _.unique(data.map(function (d) {return d.char;}))
-     chars.forEach(function(character) {
-         var charData = data.filter(function(d) {return d.char == character;})
-                            .sort(function(a, b) {return a.page - b.page;});
-         //console.log(charData);
-         charData.forEach(function(d, i) {d.present = i % 2 == 0;})
-         var filledPath = _.clone(sigPages);
-         var i = 0;
-
-         filledPath.forEach(function(page, j) {
-             if (i >= charData.length)
-                 p = false;
-             else if (charData[i].page == page){
-                 p = true; 
-                 i++;
-             }
-             else
-                 p = !charData[i].present;
-             filledPath[j] = {"char":character, "page":page, "present":p};
-         });
-
-         filledPaths[character] = filledPath;
-     });
-     return filledPaths;
- };
-
 function completePaths(data) {
      var sigPages = _.unique(data.map(function (d) {return d.page;}))
          .sort(function (a, b) {return a - b;});
@@ -41,17 +10,18 @@ function completePaths(data) {
          console.log(character, charData);
          var filledPath = []; 
          var i = 0;
-         console.log(_.difference(charData.map(function (d) {return d.page;}), sigPages));
          sigPages.forEach(function(page, j) {
              if (i >= charData.length)
                  p = false;
              else if (charData[i].page == page){
                  p = true;  
-                     i++;
+                 i++;
              }
              else if (charData[i].page > page)
                  p = !charData[i].present;
-                 
+             else
+                 console.log(i, page)
+
              filledPath.push({"char":character, "page":page, "present":p});
          });
          filledPaths[character] = filledPath;
@@ -102,12 +72,10 @@ function intersperse(ar) {
          });
          chars.forEach(function(character) {
              charLast[character]++;
-             if (Math.floor(charStart[character] / pageSize) >= Math.ceil((i + 1) / pageSize))
-                 console.log(charStart, i);
              if (charStart[character] && charLast[character] > pageSize) {
                  newData.push({'char':character, 
                                'page':[Math.floor(charStart[character] / pageSize),
-                                       Math.ceil((i + 1) / pageSize)]
+                                       Math.ceil(i / pageSize)]
                                //'page':[charStart[character], i]
                               });
                  charStart[character] = undefined;
@@ -120,23 +88,27 @@ function intersperse(ar) {
 
  function reduce_intervals(data_ints) {
      gp = _.groupBy(data_ints, function (d) {return d.char;});
+     console.log(gp)
      keys = _.keys(gp);
      reduced_data = keys.map(function(k) {
          ints_k = gp[k].map(function(i) {return i.page});
+         console.log(k, ints_k);
          merged_ints_k = merge_intervals(ints_k);
+         console.log(k, merged_ints_k);
          return merged_ints_k.map(function(i) {return {"char":k, "page":i};});
      });
      return _.flatten(reduced_data);
  }
 
  //TODO: will not work for large values. Also untested.
- function merge_intervals(intervals) {
-     if (intervals.length == 0)
-         return [];
-
+function merge_intervals(intervals) {
+    if (intervals.length == 0)
+        return [];
+    
     new_intervals = []
     rs = intervals.sort(function(a, b) {
         return (a[0] - b[0])*100000 + (a[1] - b[1]);});
+    console.log(rs);
     var a0 = rs[0][0]; var b0 = rs[0][1];
     var a; var b;
     rs.forEach(function (interval) {
@@ -148,9 +120,10 @@ function intersperse(ar) {
             a0 = a; b0 = b;
         }
     });
-    new_intervals.push([a,b]);
+    if (_.last(new_intervals) != [a0, b0])
+        new_intervals.push([a0,b0]);
     return new_intervals;
- }
+}
 
  
 /*
