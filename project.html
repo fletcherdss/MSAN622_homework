@@ -128,7 +128,7 @@ body {
 <label class ="center"><input type="checkbox"> Center Groups</label>
 <label class ="trim"><input type="checkbox"> End on Last Mention</label> 
 <label class ="verticalBar"><input type="checkbox"> Vertical Bars</label> 
-<span id="slider4text">Page Size: 60 lines</span>
+<span id="slider4text">Page Size: 80 lines</span>
 <div id="slider4"></div>
 
 
@@ -165,7 +165,7 @@ body {
                     "translate(" + (margin.left) + "," + (margin.top) + ")");
 
  //An object for keeping track of the interative features and handling updates
- var state = {trim:false, center:false, pageSize:60}
+ var state = {trim:false, center:false, pageSize:80}
 
  state.setScales = function () {
      st = this;
@@ -214,7 +214,7 @@ body {
          drawBars(state, state.bins);
      });
      d3.select('#slider4').call(
-         d3.slider().value(state.pageSize).min(8).max(80)
+         d3.slider().value(state.pageSize).min(8).max(100)
            .orientation("vertical").on("slide", function(evt, value) {
                st.pageSize = Math.floor(value);
                d3.select('#slider4text').text("Page Size: " + st.pageSize + " lines");
@@ -614,19 +614,56 @@ body {
 
 
     <div class="col-md-10">
-        <h2 class="page-header"><a name="featuresc"></a> Challanges </h2>
+        <h2 class="page-header"><a name="featuresc"></a> Conclusions </h2>
         <div class="media-body">
             <p>
                 Perhaps the most surprising observation I made was how easy it is to identity 
                 a protagonist using a cumulative percentage graph. Unlike all the other
-                characters the protagonist had a pretty much constant slope for the entirety of the book.
-                
-
+                characters the protagonist had a pretty much constant slope for the entirety of the book. I
+                was also surpirised to see how often the main characters are mentioned in contrast to 
+                the supporting characters. I imagine a lot of things things will vary from book to book though.
             </p>
+
+            <p>
+                Unfortuately I did not have time to upload more books as data, as the real value 
+                of the primary visualization is in comparing the shape of various graphs to
+                classifly by genre. You can see this in the XKCD plot. Lord of the Rings is an epic with
+                have huge number of characters and interweaving naratives. 12 Angry Men by contrast
+                has 12 people in a room. The Black Arrow is a pretty straight forward medival
+                adventure novel. It has a single protagonist and the action revolves around them.
+            </p>
+
 
         </div>
     </div>
 
+
+    <div class="col-md-10">
+        <h2 class="page-header"><a name="featuresc"></a> Summary of Work, Sources and Acknowledgments </h2>
+        <div class="media-body">
+            <p>
+                Becides D3, 2 external libraries were used, <a href="http://underscorejs.org/">Underscore </a>
+                and <a href="https://github.com/turban/d3.slider"> D3.js Slider</a>. Underscore is a 
+                general purpose javascript library which makes data manipulation easier. D3.js Slider is 
+                a simple slider library with some premade slider tools. Much of the bootstrap html
+                code was also prebuilt and modified by me.
+            </p>
+
+            <p>
+                The rest of the javascript code was all my own work. Example code may have been consulted
+                here or there, but to the best of my recolection none of the javascript contents
+                of <a href="https://github.com/fletcherdss/MSAN622_homework/blob/gh-pages/js/project.js"> project.js </a>
+                or <a href="https://github.com/fletcherdss/MSAN622_homework/blob/gh-pages/project.html"> project.html </a>
+                were copied from external sources. A small amount of my code was borrowed, in heavily modified form
+                from previous homework assignments, which may have been based on example code. The 
+                <a href="https://github.com/fletcherdss/MSAN622_homework/blob/gh-pages/data/data.py"> 
+                    python script </a> for 
+                cleaning the data is also my own work. 
+            </p>
+            
+
+        </div>
+    </div>
 
 </div>
 
