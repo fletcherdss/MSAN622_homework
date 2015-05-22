@@ -158,7 +158,7 @@ body {
                     "translate(" + (margin.left) + "," + (margin.top) + ")");
 
  //An object for keeping track of the interative features and handling updates
- var state = {trim:false, center:false, pageSize:40}
+ var state = {trim:false, center:false, pageSize:60}
 
  state.setScales = function () {
      st = this;
@@ -207,7 +207,7 @@ body {
          drawBars(state, state.bins);
      });
      d3.select('#slider4').call(
-         d3.slider().value(state.pageSize).min(8).max(60)
+         d3.slider().value(state.pageSize).min(8).max(80)
            .orientation("vertical").on("slide", function(evt, value) {
                st.pageSize = Math.floor(value);
                st.paths = builtCompletePaths(st.pageSize, st.chars, st.rawData);
@@ -298,20 +298,20 @@ body {
      var chars = state.chars;
      var x = state.x, y = state.y, color = state.color;
      var c = state.center ? -1 : 0;
+     var flatpath = flattenPaths(chars, state.paths);
      var pths = state.paths;
-     var flatpath = flattenPaths(chars, pths);
 
-     if (state.trim) {
-         var trimmedPaths = {}
-         chars.forEach(function(c) {trimmedPaths[c] = trimPath(paths[c]);})
-         pths = trimmedPaths;
-     }
-     
      ypos = function(d) {
-         return y(groupNumber(d.char, d.page, pths, chars, c)) -
+         return y(groupNumber(d.char, d.page, state.paths, chars, c)) -
          5 * _(flatpath[d.page]).indexOf(d.char); 
      }
 
+     if (state.trim) {
+         var trimmedPaths = {}
+         chars.forEach(function(c) {trimmedPaths[c] = trimPath(pths[c]);})
+         pths = trimmedPaths;
+     }
+     
      var line = d3.svg.line()
                   .x(function(d) { return x(d.page); })
                   .y(ypos)
@@ -349,6 +349,55 @@ body {
 
 
 <div class="row">
+    <div class="col-md-10">
+        <h2 class="page-header"><a name="about"></a>Techniques</h2> 
+            <div class="media-body">
+                <p>
+                    The primary plot is a visulation of which charactes are present
+                    (mentioned by name) in works of fiction. The inspiration of 
+                    this plot was a graph from <a href="https://xkcd.com/657/large/"> XKCD </a>. 
+                    The XKCD graph shows 
+                    presence of characters by time in various movies. It would be impossible
+                    to determine simultaneous events just from reading a book, so instead
+                    the graph shows what pages characters are mentioned on and when 
+                    multiple characters are on the same page. By default a page is 60 lines
+                    but the page size is adjustable with the slider.
+                </p>
+
+                <p>
+                    The top graph only show if a character is mentioned, not how often.
+                    I included two more graphs to supply that information. One can 
+                    quickly glean that Richard Shelton is the protagonist of this book from
+                    the next two graphs. 
+                </p>
+
+                <p>
+                    The first graph is a simple bar graph, showing the total number 
+                    of times each character is mentioned. As you can see this praticalar book
+                    has a single protagonist. The other characters are mentioned by 
+                    name much less often. 
+                </p>
+
+                <p>
+                    The second graph is a cumulative percentage graph. It 
+                    becomes even more apperant that Richard Shelton is a central 
+                    character as he occurs uniformly throughout the book. It also
+                    is appearant the Sir Daniel plays a central role.
+                    By contrast Bennet Hatch is mentioned mostly in the begining and so is 
+                    less central to the story. 
+
+                </p>
+
+                <p>
+                    
+
+
+                </p>
+                
+            </div>
+
+    </div>
+
     <div class="col-md-10">
         <h2 class="page-header"><a name="about"></a>The Data Set</h2> 
             <div class="media-body">
