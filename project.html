@@ -361,7 +361,7 @@ body {
         <h2 class="page-header"><a name="about"></a>Techniques: Grouped Lines</h2> 
         <div class="media-body">
             <p>
-                The primary plot is a visulization of which characters are present
+                The primary plot is a visualization of which characters are present
                 (mentioned by name) in works of fiction. The inspiration of 
                 this plot was a graph from <a href="https://xkcd.com/657/large/"> XKCD </a>. 
                 The XKCD graph shows 
@@ -377,7 +377,7 @@ body {
                 being page number, character name, and whether or not the character
                 has been mentioned on that page. The main pre-attentive attribute
                 utilized my by this visualization is grouping. The eye naturally
-                settles on the places were lines are next to eachother. 
+                settles on the places were lines are next to each other. 
             </p>
 
             <p>
@@ -388,7 +388,7 @@ body {
                 way in which the graph can me misleading is that when the page size is
                 high characters can appear to be present in a scene even if they 
                 have left the scene. This is inevitable, given the subjective nature of
-                the data. Overall though the lie factor is low, and interative controls
+                the data. Overall though the lie factor is low, and interactive controls
                 enable the user to mitigate these issues.
             </p>
 
@@ -397,9 +397,9 @@ body {
                 both when a character is present and when they are not
                 is somewhat redundant, but this is only a small
                 waste of ink in exchange for ease of tracing out individual
-                characters accross the pages. Overall the ink used
+                characters across the pages. Overall the ink used
                 is comparable to what would be used in a small multiples 
-                graph, which is a more convential way this data would be show (each line
+                graph, which is a more conventional way this data would be show (each line
                 being it's own small multiple). 
 
             </p>
@@ -430,29 +430,29 @@ body {
                 quickly glean that Richard Shelton is the protagonist of this book from
                 the next two graphs. The data from this graph was computed directly from
                 the raw data, and not the data used for the first graph. Name and number
-                of occurances are the only variables. 
+                of occurrences are the only variables. 
             </p>
             
             <p>
                 The first graph is a simple bar graph, showing the total number 
-                of times each character is mentioned. As you can see this praticalar book
+                of times each character is mentioned. As you can see this particular book
                 has a single protagonist. The other characters are mentioned by 
                 name much less often.  This graph is intended to complement the 
                 other graphs. Neither of the other graphs
                 show total word counts, so the viewer will likely want to refer to this
                 while checking the other graphs. 
-                I experimented with both horizonal and vertial orientation
+                I experimented with both horizontal and vertical orientation
                 and I think vertical is preferable as it "lines up" better with line graphs.
                  None the less, both orientations are
-                avialable to the viewer. 
+                available to the viewer. 
             </p>
 
             <p>
                 Data to ink ratio is high, and lie factor is essentially zero. Data density
-                isn't great because there is so much whitespace. This is in part the result
-                of the book having a main protagonist. Color and postion are encoding 
+                isn't great because there is so much white space. This is in part the result
+                of the book having a main protagonist. Color and position are encoding 
                 the same information, though I would argue this is justified in order to make
-                the graph consistant with the other to. Color enables this graph to double
+                the graph consistent with the other to. Color enables this graph to double
                 as a legend for the graph to it's right.
 
             </p>
@@ -481,12 +481,12 @@ body {
 
             <p>
                 It 
-                becomes even more apperant that Richard Shelton is a central 
+                becomes even more apparent that Richard Shelton is a central 
                 character as he occurs uniformly throughout the book. It also
-                is appearant the Sir Daniel plays a central role.
-                By contrast Bennet Hatch is mentioned mostly in the begining and so is 
+                is apparent the Sir Daniel plays a central role.
+                By contrast Bennet Hatch is mentioned mostly in the beginning and so is 
                 less central to the story. The visualization also serves
-                to distiguish between early characters, late characters, 
+                to distinguish between early characters, late characters, 
                 and characters absent in the middle.
                 
             </p>
@@ -521,16 +521,16 @@ body {
                     Filtering by character is/was also planned. As with zooming 
                     filtering allows the users to focus, but this time by character 
                     rather than page. Filtering allows users to investigate questions 
-                    like how often specific characters occur togeather. 
+                    like how often specific characters occur together. 
                 </p>
 
                 <p>
                      The
                     User also has the option to put the grouped users either at the bottom of 
                     the graph or at the median of their starting positions. The former option
-                    encodes more information as it enables the users to recogize when
+                    encodes more information as it enables the users to recognize when
                     only a single character is present. Also centering does risk having
-                    users appear to be present if their starting postion is in the center of the
+                    users appear to be present if their starting position is in the center of the
                     group. Centering does look a lot better though, and significantly reduces
                     the amount of crossing lines. 
                     It was planned to have the user be able to manually move the lines
@@ -557,7 +557,7 @@ body {
                 The main feedback I considered was having the characters end 
                 when the lines end. I elected to allow the user decide in this case,
                 as the effect this will have depends a lot on the data. I has 
-                had the sugestion to have absent characters be a faded color or a dashed line.
+                had the suggestion to have absent characters be a faded color or a dashed line.
                 I would have liked to implement this feature, but I did not have time to
                 do so.
 
@@ -566,12 +566,12 @@ body {
     </div>
 
     <div class="col-md-10">
-        <h2 class="page-header"><a name="featuresc"></a> Challanges </h2>
+        <h2 class="page-header"><a name="featuresc"></a> Challenges </h2>
         <div class="media-body">
             <p>
-                The biggest challege for this project was just handling the data. 
+                The biggest challenge for this project was just handling the data. 
                 Stripping the words out of the text proved to be pretty straight forward.
-                All I had to do get the list of characters from wikipedia 
+                All I had to do get the list of characters from Wikipedia 
                 <a href="https://en.wikipedia.org/wiki/The_Black_Arrow:_A_Tale_of_the_Two_Roses#Characters"> Wikipedia </a>,
                 add in a few alternative names for each character, and filter everything
                 that wasn't a character name from each line. I wrote a simple python script
@@ -580,22 +580,22 @@ body {
             </p>
             <p>
                 Getting the data into a form which could be used by d3 proved to be more difficult.
-                The raw data was quite hetrogenious. I created a javascript library 
+                The raw data was quite heterogeneous. I created a JavaScript library 
                 <a href="https://github.com/fletcherdss/MSAN622_homework/blob/gh-pages/js/project.js"> project.js </a>
-                which took significantly more time than I anticiptated. Javascript
+                which took significantly more time than I anticipated. JavaScript
                 will often fail silently which meant it often took a while to get
                 to the root of the problem. I can see moving forward that extensive 
-                testing frameworks are necessary for any sort of javascript
+                testing frameworks are necessary for any sort of JavaScript
                 development, as often my data would fail to meet the specification
                 I thought it had. 
                 
             </p>
         
             <p>
-                This was my first major javascript project, so there was
+                This was my first major JavaScript project, so there was
                 still a fair amount of familiarizing myself with the language I
                 had to do. Much of the functionality I was accustomed to with
-                other languages doesn't exist in Javascript though I
+                other languages doesn't exist in JavaScript though I
                 found <a href="http://underscorejs.org/"> Underscore </a> to 
                 be a big help filling in a lot of the features I am was looking for.
 
@@ -603,7 +603,7 @@ body {
 
             <p>
                 Finally I found handling updating in D3 to be tricky. While it
-                might be fairly straight forward to put togeather a static 
+                might be fairly straight forward to put together a static 
                 page, as soon as you need to flexibility in what is displayed things start
                 to break. 
 
@@ -620,16 +620,16 @@ body {
                 Perhaps the most surprising observation I made was how easy it is to identity 
                 a protagonist using a cumulative percentage graph. Unlike all the other
                 characters the protagonist had a pretty much constant slope for the entirety of the book. I
-                was also surpirised to see how often the main characters are mentioned in contrast to 
+                was also surprised to see how often the main characters are mentioned in contrast to 
                 the supporting characters. I imagine a lot of things things will vary from book to book though.
             </p>
 
             <p>
-                Unfortuately I did not have time to upload more books as data, as the real value 
+                Unfortunately I did not have time to upload more books as data, as the real value 
                 of the primary visualization is in comparing the shape of various graphs to
-                classifly by genre. You can see this in the XKCD plot. Lord of the Rings is an epic with
-                have huge number of characters and interweaving naratives. 12 Angry Men by contrast
-                has 12 people in a room. The Black Arrow is a pretty straight forward medival
+                classify by genre. You can see this in the XKCD plot. Lord of the Rings is an epic with
+                have huge number of characters and interweaving narratives. 12 Angry Men by contrast
+                has 12 people in a room. The Black Arrow is a pretty straight forward medieval
                 adventure novel. It has a single protagonist and the action revolves around them.
             </p>
 
@@ -642,16 +642,16 @@ body {
         <h2 class="page-header"><a name="featuresc"></a> Summary of Work, Sources and Acknowledgments </h2>
         <div class="media-body">
             <p>
-                Becides D3, 2 external libraries were used, <a href="http://underscorejs.org/">Underscore </a>
+                Besides D3, 2 external libraries were used, <a href="http://underscorejs.org/">Underscore </a>
                 and <a href="https://github.com/turban/d3.slider"> D3.js Slider</a>. Underscore is a 
-                general purpose javascript library which makes data manipulation easier. D3.js Slider is 
-                a simple slider library with some premade slider tools. Much of the bootstrap html
+                general purpose JavaScript library which makes data manipulation easier. D3.js Slider is 
+                a simple slider library with some premade slider tools. Much of the bootstrap HTML
                 code was also prebuilt and modified by me.
             </p>
 
             <p>
-                The rest of the javascript code was all my own work. Example code may have been consulted
-                here or there, but to the best of my recolection none of the javascript contents
+                The rest of the JavaScript code was all my own work. Example code may have been consulted
+                here or there, but to the best of my recollection none of the JavaScript contents
                 of <a href="https://github.com/fletcherdss/MSAN622_homework/blob/gh-pages/js/project.js"> project.js </a>
                 or <a href="https://github.com/fletcherdss/MSAN622_homework/blob/gh-pages/project.html"> project.html </a>
                 were copied from external sources. A small amount of my code was borrowed, in heavily modified form
