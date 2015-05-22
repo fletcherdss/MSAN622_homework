@@ -40,27 +40,34 @@ body {
 
 .center {
   position: relative;
-  top: 90px;
-  right: -1360px;
+  top: 350px;
+  left: 1360px;
 }
 
 .trim {
   position: relative;
-  top: 120px;
-  right: -1241px;
+  top: 380px;
+  left: 1241px;
 }
 
 .verticalBar {
   position: relative;
-  top: 150px;
-  right: -1148px;
+  top: 410px;
+  left: 1083px;
 }
 
  #slider4 {
-     height: 150px;
+     height: 250px;
      position: relative;
-     top: 160px;
-     right: -1380px;
+     top: 432px;
+     left: 1360px;
+ }
+
+ #slider4text {
+     height: 250px;
+     position: relative;
+     top: 428px;
+     left: 976px;
  }
 
 
@@ -119,13 +126,13 @@ body {
 
 
 <label class ="center"><input type="checkbox"> Center Groups</label>
-<label class ="trim"><input type="checkbox"> Trim Paths</label> 
+<label class ="trim"><input type="checkbox"> End on Last Mention</label> 
 <label class ="verticalBar"><input type="checkbox"> Vertical Bars</label> 
+<span id="slider4text">Page Size: 60 lines</span><
 <div id="slider4"></div>
 
 
 <script>
-
 
  var margin = {top: 20, right: 20, bottom: 40, left: 150},
      width = 1300 - margin.left - margin.right,
@@ -210,6 +217,7 @@ body {
          d3.slider().value(state.pageSize).min(8).max(80)
            .orientation("vertical").on("slide", function(evt, value) {
                st.pageSize = Math.floor(value);
+               d3.select('#slider4text').text("Page Size: " + st.pageSize + " lines");
                st.paths = builtCompletePaths(st.pageSize, st.chars, st.rawData);
                st.cumulativeData = cumulativeSum(st.chars, st.rawData, st.pageSize);
                st.setScales();
@@ -399,25 +407,122 @@ body {
     </div>
 
     <div class="col-md-10">
-        <h2 class="page-header"><a name="about"></a>The Data Set</h2> 
+        <h2 class="page-header"><a name="about"></a>Interactivity</h2> 
             <div class="media-body">
                 <p>
-	                The data is currently mocked up, but the final project is based
-                    on data extracted from one or more actual books. The data consists
-                    of names of characters and where that characters name is mentioned in
-                    the book. The data it self is sparsified. For each character There
-                    are records marking the start and end of sections where that character
-                    is mentioned frequently. You can see the full details of the
-                    <a href="./projectdata.html"> Project Gutenberg  
-                        data set </a>. The data set has not
-                    changed, though I might be using a smaller portion than before and focusing
-                    exclusively on fiction.
+                    There are several forms of interactivity. The primary
+                    form of interactivity is the the adjustable page size. 
+                    Adjusting the size of pages with the slider allows the user 
+                    to strike a balance between readability and Lie Factor. If 
+                    the page size is small then Lie Factor is low, while if the 
+                    page size is large then the lie factor is high. Setting the page
+                    size high is preferable if the user is trying to get a
+                    big picture of the flow of the story, while a smaller page size 
+                    allows them to see to details of when characters are mentioned. 
                 </p>
 
+                <p>
+                    Zooming by a brush/slider is/was planned but it may or may not be 
+                    completed by midnight tonight. Zooming allows the user to 
+                    focus on specific sections of the action, and is a complement
+                    to adjusting page size. 
+                </p>
+
+                <p>
+                    Filtering by character is/was also planned. As with zooming 
+                    filtering allows the users to focus, but this time by character 
+                    rather than page. Filtering allows users to investigate questions 
+                    like how often specific characters occur togeather. 
+                </p>
+
+                <p>
+                     The
+                    User also has the option to put the grouped users either at the bottom of 
+                    the graph or at the median of their starting positions. The former option
+                    encodes more information as it enables the users to recogize when
+                    only a single character is present. Also centering does risk having
+                    users appear to be present if their starting postion is in the center of the
+                    group. Centering does look a lot better though, and significantly reduces
+                    the amount of crossing lines. 
+                    It was planned to have the user be able to manually move the lines
+                    to further reduce clutter, but there wasn't time to implement this feature. 
+                </p>
+
+                <p>
+                    The User also has the option of having lines end once a character is no longer 
+                    mentioned. This does not produce a very dramatic effect for this
+                    visualization, and not many of the main characters are killed
+                    or removed from action, or if they are they might still be
+                    mentioned again. This could be interesting for visualizing a work like Game 
+                    of Thrones though.
+                </p>
                 
             </div>
 
     </div>
+
+    <div class="col-md-10">
+        <h2 class="page-header"><a name="featuresc"></a> Feedback </h2>
+        <div class="media-body">
+            <p>
+                The main feedback I considered was having the characters end 
+                when the lines end. I elected to allow the user decide in this case,
+                as the effect this will have depends a lot on the data. I has 
+                had the sugestion to have absent characters be a faded color or a dashed line.
+                I would have liked to implement this feature, but I did not have time to
+                do so.
+
+            </p>
+        </div>
+    </div>
+
+    <div class="col-md-10">
+        <h2 class="page-header"><a name="featuresc"></a> Challanges </h2>
+        <div class="media-body">
+            <p>
+                The biggest challege for this project was just handling the data. 
+                Stripping the words out of the text proved to be pretty straight forward.
+                All I had to do get the list of characters from wikipedia 
+                <a href="https://en.wikipedia.org/wiki/The_Black_Arrow:_A_Tale_of_the_Two_Roses#Characters"> Wikipedia </a>,
+                add in a few alternative names for each character, and filter everything
+                that wasn't a character name from each line. I wrote a simple python script
+                which handled all that output everything in a JSON compliant text files
+                <a href="https://github.com/fletcherdss/MSAN622_homework/blob/gh-pages/data/blackar.txt"> blackar.txt </a>.
+            </p>
+            <p>
+                Getting the data into a form which could be used by d3 proved to be more difficult.
+                The raw data was quite hetrogenious. I created a javascript library 
+                <a href="https://github.com/fletcherdss/MSAN622_homework/blob/gh-pages/js/project.js"> project.js </a>
+                which took significantly more time than I anticiptated. Javascript
+                will often fail silently which meant it often took a while to get
+                to the root of the problem. I can see moving forward that extensive 
+                testing frameworks are necessary for any sort of javascript
+                development, as often my data would fail to meet the specification
+                I thought it had. 
+                
+            </p>
+        
+            <p>
+                This was my first major javascript project, so there was
+                still a fair amount of familiarizing myself with the language I
+                had to do. Much of the functionality I was accustomed to with
+                other languages doesn't exist in Javascript though I
+                found <a href="http://underscorejs.org/"> Underscore </a> to 
+                be a big help filling in a lot of the features I am was looking for.
+
+            </p>
+
+            <p>
+                Finally I found handling updating in D3 to be tricky. While it
+                might be fairly straight forward to put togeather a static 
+                page, as soon as you need to flexibility in what is displayed things start
+                to break. 
+
+            </p>
+
+        </div>
+    </div>
+
 
     <div class="col-md-10">
         <h2 class="page-header"><a name="featuresc"></a> Summary </h2>
@@ -448,7 +553,7 @@ body {
                 The bottom plots might change slightly. The bar plot will
                 probably made specific to character names, and the line plot may be
                 counts of character name by chapter.
-
+                
             </p>
             
         </div>

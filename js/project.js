@@ -34,7 +34,6 @@ function completePaths(data) {
      return filledPaths;
 }
 
-
 function intersperse(ar) {
     i = 0;
     ar2 = [];
@@ -45,8 +44,6 @@ function intersperse(ar) {
     return ar2;
 }
 
-
-
 function trimPath(path) {
     path2 = path.slice()
     while (path2.length > 0 && !path2.slice(-1)[0].present){
@@ -54,15 +51,6 @@ function trimPath(path) {
     }
     return path2;
 }
-
-var d = []
-var data_ints = [
-    {"char":"green", "page":[1, 20]},
-    {"char":"red", "page":[20, 60]},
-    {"char":"brown", "page":[40, 120]},
-    {"char":"green", "page":[100, 160]},
-    {"char":"pink", "page":[140, 160]},
-]
 
 function buildIntervals(pageSize, chars, data) {
     charStart = {}; //The first line they were mentioned
@@ -125,18 +113,6 @@ function merge_intervals(intervals) {
         new_intervals.push([a0,b0]);
     return new_intervals;
 }
-
- 
-/*
-dataTest = [[], [], [], ['r', 'b', 'g'], ['r', 'b'], ['r'], ['r','g'], ['r'], [], [], []]
-console.log(buildIntervals(2, ['r','g', 'b'], dataTest));
-*/
-/*
-d3.json("/data/blackar.txt",function (data) {
-    chars = _.unique(_.flatten(data));
-    console.log(buildIntervals(40, chars, data));
-});
-*/
 
  function getGroups(paths){
      var pageGroups = {}
