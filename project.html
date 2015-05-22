@@ -10,7 +10,7 @@
 </head>
 
 
-<link rel="stylesheet" href="d3.slider/d3.slider.css" />  
+<link rel="stylesheet" href="d3.slider/d3.slider.css" />   
 <style>
 
 body {
@@ -77,7 +77,7 @@ body {
 <body>
 
 
-<title>Project Prototype</title>
+<title>Final Project</title>
 
 <link href="css/bootstrap.min.css" rel="stylesheet">
 <link href="css/bootstrap-theme.min.css" rel="stylesheet">
@@ -128,7 +128,7 @@ body {
 <label class ="center"><input type="checkbox"> Center Groups</label>
 <label class ="trim"><input type="checkbox"> End on Last Mention</label> 
 <label class ="verticalBar"><input type="checkbox"> Vertical Bars</label> 
-<span id="slider4text">Page Size: 60 lines</span><
+<span id="slider4text">Page Size: 60 lines</span>
 <div id="slider4"></div>
 
 
@@ -358,53 +358,142 @@ body {
 
 <div class="row">
     <div class="col-md-10">
-        <h2 class="page-header"><a name="about"></a>Techniques</h2> 
-            <div class="media-body">
-                <p>
-                    The primary plot is a visulation of which charactes are present
-                    (mentioned by name) in works of fiction. The inspiration of 
-                    this plot was a graph from <a href="https://xkcd.com/657/large/"> XKCD </a>. 
-                    The XKCD graph shows 
-                    presence of characters by time in various movies. It would be impossible
-                    to determine simultaneous events just from reading a book, so instead
-                    the graph shows what pages characters are mentioned on and when 
-                    multiple characters are on the same page. By default a page is 60 lines
-                    but the page size is adjustable with the slider.
-                </p>
+        <h2 class="page-header"><a name="about"></a>Techniques: Grouped Lines</h2> 
+        <div class="media-body">
+            <p>
+                The primary plot is a visulization of which characters are present
+                (mentioned by name) in works of fiction. The inspiration of 
+                this plot was a graph from <a href="https://xkcd.com/657/large/"> XKCD </a>. 
+                The XKCD graph shows 
+                presence of characters by time in various movies. It would be impossible
+                to determine simultaneous events just from reading a book, so instead
+                the graph shows what pages characters are mentioned on and when 
+                multiple characters are on the same page. By default a page is 60 lines
+                but the page size is adjustable with the slider.
+            </p>
 
-                <p>
-                    The top graph only show if a character is mentioned, not how often.
-                    I included two more graphs to supply that information. One can 
-                    quickly glean that Richard Shelton is the protagonist of this book from
-                    the next two graphs. 
-                </p>
+            <p>
+                The data is encoded as a series of points with the fields
+                being page number, character name, and whether or not the character
+                has been mentioned on that page. The main pre-attentive attribute
+                utilized my by this visualization is grouping. The eye naturally
+                settles on the places were lines are next to eachother. 
+            </p>
 
-                <p>
-                    The first graph is a simple bar graph, showing the total number 
-                    of times each character is mentioned. As you can see this praticalar book
-                    has a single protagonist. The other characters are mentioned by 
-                    name much less often. 
-                </p>
+            <p>
+                The main way this graph can be misleading is that lines 
+                can some times appear to be part of a group when they are not. Also
+                It if only one character is present in the scene it can be difficult to 
+                tell. These are only issues when the groups are centered. Another
+                way in which the graph can me misleading is that when the page size is
+                high characters can appear to be present in a scene even if they 
+                have left the scene. This is inevitable, given the subjective nature of
+                the data. Overall though the lie factor is low, and interative controls
+                enable the user to mitigate these issues.
+            </p>
 
-                <p>
-                    The second graph is a cumulative percentage graph. It 
-                    becomes even more apperant that Richard Shelton is a central 
-                    character as he occurs uniformly throughout the book. It also
-                    is appearant the Sir Daniel plays a central role.
-                    By contrast Bennet Hatch is mentioned mostly in the begining and so is 
-                    less central to the story. 
+            <p>
+                Data-ink ratio is good. The having the lines visible 
+                both when a character is present and when they are not
+                is somewhat redundant, but this is only a small
+                waste of ink in exchange for ease of tracing out individual
+                characters accross the pages. Overall the ink used
+                is comparable to what would be used in a small multiples 
+                graph, which is a more convential way this data would be show (each line
+                being it's own small multiple). 
 
-                </p>
+            </p>
 
-                <p>
-                    
+            <p>
+                Data density is reasonably high. Whiles this 
+                isn't as dense as a heatmap it does still display 
+                a fair amount of information in a reasonably small space.
+            </p>
 
+            <p>
+                The visualization excels at draw attention to when characters
+                enter or or exit the action. The visualization also illustrates
+                which characters have the most interaction, and shows
+                which characters are present for the largest part of the book.
 
-                </p>
-                
-            </div>
-
+            </p>
+        </div>
     </div>
+
+    <div class="col-md-10">
+        <div class="media-body">
+            <h2 class="page-header"><a name="about"></a>Techniques: Bar Chart</h2> 
+        
+            <p>
+                The top graph only shows if a character is mentioned, not how often.
+                I included two more graphs to supply that information. One can 
+                quickly glean that Richard Shelton is the protagonist of this book from
+                the next two graphs. The data from this graph was computed directly from
+                the raw data, and not the data used for the first graph. Name and number
+                of occurances are the only variables. 
+            </p>
+            
+            <p>
+                The first graph is a simple bar graph, showing the total number 
+                of times each character is mentioned. As you can see this praticalar book
+                has a single protagonist. The other characters are mentioned by 
+                name much less often.  This graph is intended to complement the 
+                other graphs. Neither of the other graphs
+                show total word counts, so the viewer will likely want to refer to this
+                while checking the other graphs. 
+                I experimented with both horizonal and vertial orientation
+                and I think vertical is preferable as it "lines up" better with line graphs.
+                 None the less, both orientations are
+                avialable to the viewer. 
+            </p>
+
+            <p>
+                Data to ink ratio is high, and lie factor is essentially zero. Data density
+                isn't great because there is so much whitespace. This is in part the result
+                of the book having a main protagonist. Color and postion are encoding 
+                the same information, though I would argue this is justified in order to make
+                the graph consistant with the other to. Color enables this graph to double
+                as a legend for the graph to it's right.
+
+            </p>
+            
+        </div>
+    </div>
+
+    <div class="col-md-10">
+        <div class="media-body">
+            <h2 class="page-header"><a name="about"></a>Techniques: Cumulative Percentage</h2> 
+            <p>
+                The Final graph is a cumulative percentage graph. The x axis is the page
+                number and the y axis is the 
+                cumulative percentage of mentions of a characters name by that page. Color
+                is the character name.
+            </p>
+            
+            <p>
+                Lie Factor is minimal with the kind of graph. There is a 
+                bit of monotone smoothing of the lines, but that is about it. 
+                Data density is average.
+                Line graphs do have a fair amount of white space. Data to ink ratio 
+                is pretty good. Almost all ink is data.
+
+            </p>
+
+            <p>
+                It 
+                becomes even more apperant that Richard Shelton is a central 
+                character as he occurs uniformly throughout the book. It also
+                is appearant the Sir Daniel plays a central role.
+                By contrast Bennet Hatch is mentioned mostly in the begining and so is 
+                less central to the story. The visualization also serves
+                to distiguish between early characters, late characters, 
+                and characters absent in the middle.
+                
+            </p>
+
+        </div>
+    </div>
+</body>
 
     <div class="col-md-10">
         <h2 class="page-header"><a name="about"></a>Interactivity</h2> 
@@ -525,39 +614,20 @@ body {
 
 
     <div class="col-md-10">
-        <h2 class="page-header"><a name="featuresc"></a> Summary </h2>
+        <h2 class="page-header"><a name="featuresc"></a> Challanges </h2>
         <div class="media-body">
             <p>
-                Each line represents a character. If two lines are near to each other
-                in a certain page interval 
-                that indicates that that they are both being mentioned on those pages.
-                Currently being at the bottom of the graph indicates those 
-                characters are being mentioned, while being away from the bottom
-                indicates that they not being mentioned. I plan to have
-                the characters not currently in the action be shown as
-                dashed lines, but that has not implemented yet.
-            </p>
-            <p>
-                The toggle box in the corner moves the characters currently
-                present towards the middle, making the lines less tangled. 
-                This presently this is somewhat confusing as the red line,
-                appears to be present with the other characters 
-                when in fact it is merely happens to lie in the center. 
-                I plan to have move the characters not presently being mentioned away
-                from those that are, but that has not yet been implemented.
-            </p>
-            <p>
-                The plot shown is the top plot on the <a href="./projectsketch.html"> 
-                original sketch </a>. It has remained true to it's original purpose,
-                though some of the functionality shown has not yet been implemented.
-                The bottom plots might change slightly. The bar plot will
-                probably made specific to character names, and the line plot may be
-                counts of character name by chapter.
+                Perhaps the most surprising observation I made was how easy it is to identity 
+                a protagonist using a cumulative percentage graph. Unlike all the other
+                characters the protagonist had a pretty much constant slope for the entirety of the book.
                 
+
             </p>
-            
+
         </div>
     </div>
+
+
 </div>
 
 </body>
